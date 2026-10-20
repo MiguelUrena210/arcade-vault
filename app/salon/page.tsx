@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { HallOfFame } from "@/components/hall-of-fame";
 import { GAMES, getGame } from "@/lib/games";
+
+export const metadata: Metadata = { title: "Salón de la Fama" };
 
 async function Hall({ searchParams }: { searchParams: PageProps<"/salon">["searchParams"] }) {
   const { juego } = await searchParams;

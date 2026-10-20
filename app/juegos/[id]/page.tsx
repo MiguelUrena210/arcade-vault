@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GAMES, getGame } from "@/lib/games";
@@ -5,6 +6,14 @@ import { seededScores } from "@/lib/scores";
 
 export function generateStaticParams() {
   return GAMES.map((g) => ({ id: g.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/juegos/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const game = getGame(id);
+  return game ? { title: game.title, description: game.short } : {};
 }
 
 export default async function GameDetail({
