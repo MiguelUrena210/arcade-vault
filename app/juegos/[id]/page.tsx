@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { GAMES, getGame } from "@/lib/games";
 import { seededScores } from "@/lib/scores";
 
@@ -16,9 +17,17 @@ export async function generateMetadata({
   return game ? { title: game.title, description: game.short } : {};
 }
 
-export default async function GameDetail({
+export default function GameDetail({ params }: PageProps<"/juegos/[id]">) {
+  return (
+    <Suspense fallback={<div className="av-detail" />}>
+      <GameDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function GameDetailContent({
   params,
-}: PageProps<"/juegos/[id]">) {
+}: Pick<PageProps<"/juegos/[id]">, "params">) {
   const { id } = await params;
   const game = getGame(id);
   if (!game) notFound();
