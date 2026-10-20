@@ -6,6 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Arcade Vault: plataforma para jugar online y competir por puntos. Estado actual: scaffold de Create Next App (solo `app/layout.tsx`, `app/page.tsx`, `app/globals.css`). Se sigue Spec Driven Design (`/spec` y `/spec-impl`) con las skills de `Klerith/fernando-skills` (`npx skills@latest add Klerith/fernando-skills`).
 
+## Skills
+Usa la skill `/frontend-design` para diseño de UI/UX.
+
 ## Comandos
 
 - `npm run dev` — servidor de desarrollo
