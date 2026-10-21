@@ -11,13 +11,13 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/juegos/[id]">): Promise<Metadata> {
+}: PageProps<"/games/[id]">): Promise<Metadata> {
   const { id } = await params;
   const game = getGame(id);
   return game ? { title: game.title, description: game.short } : {};
 }
 
-export default function GameDetail({ params }: PageProps<"/juegos/[id]">) {
+export default function GameDetail({ params }: PageProps<"/games/[id]">) {
   return (
     <Suspense fallback={<div className="av-detail" />}>
       <GameDetailContent params={params} />
@@ -27,7 +27,7 @@ export default function GameDetail({ params }: PageProps<"/juegos/[id]">) {
 
 async function GameDetailContent({
   params,
-}: Pick<PageProps<"/juegos/[id]">, "params">) {
+}: Pick<PageProps<"/games/[id]">, "params">) {
   const { id } = await params;
   const game = getGame(id);
   if (!game) notFound();
@@ -74,7 +74,7 @@ async function GameDetailContent({
             </div>
           </div>
           <div className="detail-actions">
-            <Link href={`/juegos/${game.id}/jugar`} className="btn xl pulse">
+            <Link href={`/games/${game.id}/play`} className="btn xl pulse">
               ▶ JUGAR AHORA
             </Link>
             <Link href="/" className="btn ghost lg">
