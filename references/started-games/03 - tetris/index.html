@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tetris</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button id="theme-toggle" class="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Modo claro">
+    <span id="theme-text">Oscuro</span>
+    <span class="theme-track"><span class="theme-thumb"></span></span>
+  </button>
+
+  <label class="skin-picker">
+    <span>Skin</span>
+    <select id="skin-select" aria-label="Skin visual">
+      <option value="retro">Retro</option>
+      <option value="neon">Neon</option>
+      <option value="pastel">Pastel</option>
+      <option value="pixel">Pixel art</option>
+    </select>
+  </label>
+
+  <h1 class="title">TETRIS</h1>
+
+  <div class="wrapper">
+    <div class="game-container">
+      <canvas id="board" width="300" height="600"></canvas>
+
+      <aside class="panel">
+        <div class="panel-section">
+          <span class="label">SCORE</span>
+          <span class="value" id="score">0</span>
+        </div>
+        <div class="panel-section">
+          <span class="label">LINES</span>
+          <span class="value" id="lines">0</span>
+        </div>
+        <div class="panel-section">
+          <span class="label">LEVEL</span>
+          <span class="value" id="level">1</span>
+        </div>
+
+        <div class="panel-section">
+          <span class="label">NEXT</span>
+          <canvas id="next-canvas" width="120" height="120"></canvas>
+        </div>
+
+        <div class="panel-section controls">
+          <span class="label">CONTROLS</span>
+          <ul>
+            <li><kbd>←</kbd><kbd>→</kbd> mover</li>
+            <li><kbd>↑</kbd> rotar</li>
+            <li><kbd>↓</kbd> bajar</li>
+            <li><kbd>Space</kbd> caída</li>
+            <li><kbd>P</kbd> / <kbd>Esc</kbd> pausa</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <div id="pause-menu" class="overlay hidden" role="dialog" aria-label="Pausa">
+      <div class="pause-box">
+        <p class="pause-title">PAUSA</p>
+        <button id="pause-resume" type="button">Reanudar</button>
+        <button id="pause-restart" type="button">Reiniciar</button>
+        <label class="pause-level">Nivel inicial
+          <select id="start-level"></select>
+        </label>
+        <details class="pause-controls">
+          <summary>Ver controles</summary>
+          <ul>
+            <li><kbd>←</kbd><kbd>→</kbd> mover</li>
+            <li><kbd>↑</kbd> / <kbd>X</kbd> rotar</li>
+            <li><kbd>↓</kbd> bajar</li>
+            <li><kbd>Space</kbd> caída</li>
+            <li><kbd>P</kbd> / <kbd>Esc</kbd> pausa</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+
+    <div id="overlay" class="overlay hidden">
+      <div class="overlay-box">
+        <p id="overlay-title">GAME OVER</p>
+        <p id="overlay-score"></p>
+        <div id="records-over" class="records hidden">
+          <p class="records-title">TOP 5</p>
+          <table class="records-table"><tbody id="records-over-body"></tbody></table>
+          <p id="over-stats" class="records-stats"></p>
+          <button type="button" class="records-reset">Resetear records</button>
+        </div>
+        <button id="restart-btn">Reiniciar</button>
+      </div>
+    </div>
+
+    <div id="start-screen" class="overlay">
+      <div class="overlay-box records">
+        <p class="start-title">TETRIS</p>
+        <p class="records-title">TOP 5</p>
+        <table class="records-table"><tbody id="start-records"></tbody></table>
+        <p id="start-stats" class="records-stats"></p>
+        <button id="play-btn" type="button">Jugar</button>
+        <button type="button" class="records-reset">Resetear records</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="skins.js"></script>
+  <script src="records.js"></script>
+  <script src="pause-menu.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
