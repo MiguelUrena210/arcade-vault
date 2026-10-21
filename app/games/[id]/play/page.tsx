@@ -10,13 +10,13 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/juegos/[id]/jugar">): Promise<Metadata> {
+}: PageProps<"/games/[id]/play">): Promise<Metadata> {
   const { id } = await params;
   const game = getGame(id);
   return game ? { title: `Jugando ${game.title}` } : {};
 }
 
-export default function PlayPage({ params }: PageProps<"/juegos/[id]/jugar">) {
+export default function PlayPage({ params }: PageProps<"/games/[id]/play">) {
   return (
     <Suspense fallback={<div className="av-player" />}>
       <PlayContent params={params} />
@@ -26,7 +26,7 @@ export default function PlayPage({ params }: PageProps<"/juegos/[id]/jugar">) {
 
 async function PlayContent({
   params,
-}: Pick<PageProps<"/juegos/[id]/jugar">, "params">) {
+}: Pick<PageProps<"/games/[id]/play">, "params">) {
   const { id } = await params;
   const game = getGame(id);
   if (!game) notFound();

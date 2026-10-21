@@ -10,7 +10,7 @@ export default function NotFound() {
       <div className="sub">
         JUEGO NO ENCONTRADO <span className="blink">_</span>
       </div>
-      <Link href="/" className="btn pulse" style={{ marginTop: 32 }}>
+      <Link href="/games" className="btn pulse" style={{ marginTop: 32 }}>
         VOLVER AL VAULT
       </Link>
     </section>

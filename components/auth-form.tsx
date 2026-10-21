@@ -12,7 +12,7 @@ export function AuthForm() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/");
+    router.push("/games");
   };
 
   return (
@@ -72,7 +72,7 @@ export function AuthForm() {
         <button
           className="btn ghost"
           style={{ width: "100%", marginTop: 10 }}
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/games")}
         >
           JUGAR COMO INVITADO
         </button>
