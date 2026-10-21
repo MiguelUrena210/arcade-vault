@@ -5,13 +5,13 @@ import { GAMES, getGame } from "@/lib/games";
 
 export const metadata: Metadata = { title: "Salón de la Fama" };
 
-async function Hall({ searchParams }: { searchParams: PageProps<"/salon">["searchParams"] }) {
-  const { juego } = await searchParams;
-  const id = typeof juego === "string" && getGame(juego) ? juego : GAMES[0].id;
+async function Hall({ searchParams }: { searchParams: PageProps<"/hall-of-fame">["searchParams"] }) {
+  const { game } = await searchParams;
+  const id = typeof game === "string" && getGame(game) ? game : GAMES[0].id;
   return <HallOfFame gameId={id} />;
 }
 
-export default function SalonPage({ searchParams }: PageProps<"/salon">) {
+export default function HallOfFamePage({ searchParams }: PageProps<"/hall-of-fame">) {
   return (
     <Suspense fallback={<div className="av-hall" />}>
       <Hall searchParams={searchParams} />

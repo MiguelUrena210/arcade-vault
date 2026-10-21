@@ -18,7 +18,7 @@ export function HallOfFame({ gameId }: { gameId: string }) {
         {GAMES.map((g) => (
           <Link
             key={g.id}
-            href={`/salon?juego=${g.id}`}
+            href={`/hall-of-fame?game=${g.id}`}
             className={"chip" + (gameId === g.id ? " active" : "")}
           >
             {g.title}
