@@ -1,6 +1,6 @@
 # SPEC 03 — Infraestructura de Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 02
 > **Fecha:** 2026-10-22
 > **Objetivo:** Conectar la app Next.js al proyecto remoto de Supabase (`bffywagyecastmrxbnem`) con clientes tipados de servidor y navegador, variables de entorno y tipos generados, sin cambios visibles.
