@@ -1,6 +1,6 @@
 # SPEC 04 — Asteroids jugable en el reproductor
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 02
 > **Fecha:** 2026-10-22
 > **Objetivo:** Portar a TypeScript el Asteroids de `references/started-games/02 - asteroids/` y hacerlo jugable en `/games/asteroids/play`, reemplazando la entrada ROCAS del catálogo.
