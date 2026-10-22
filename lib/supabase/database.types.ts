@@ -14,16 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      games: {
+        Row: {
+          cat: Database["public"]["Enums"]["game_category"]
+          color: Database["public"]["Enums"]["game_color"]
+          cover: string
+          created_at: string
+          id: number
+          long: string
+          saves_scores: boolean
+          short: string
+          slug: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          cat: Database["public"]["Enums"]["game_category"]
+          color: Database["public"]["Enums"]["game_color"]
+          cover: string
+          created_at?: string
+          id?: never
+          long: string
+          saves_scores?: boolean
+          short: string
+          slug: string
+          sort_order: number
+          title: string
+        }
+        Update: {
+          cat?: Database["public"]["Enums"]["game_category"]
+          color?: Database["public"]["Enums"]["game_color"]
+          cover?: string
+          created_at?: string
+          id?: never
+          long?: string
+          saves_scores?: boolean
+          short?: string
+          slug?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      scores: {
+        Row: {
+          created_at: string
+          game_id: number
+          id: number
+          initials: string
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          game_id: number
+          id?: never
+          initials: string
+          score: number
+        }
+        Update: {
+          created_at?: string
+          game_id?: number
+          id?: never
+          initials?: string
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scores_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "game_stats"
+            referencedColumns: ["game_id"]
+          },
+          {
+            foreignKeyName: "scores_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      game_stats: {
+        Row: {
+          best: number | null
+          game_id: number | null
+          plays: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      game_category: "ARCADE" | "PUZZLE" | "SHOOTER" | "VERSUS"
+      game_color: "cyan" | "magenta" | "green" | "yellow"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +238,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      game_category: ["ARCADE", "PUZZLE", "SHOOTER", "VERSUS"],
+      game_color: ["cyan", "magenta", "green", "yellow"],
+    },
   },
 } as const

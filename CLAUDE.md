@@ -33,7 +33,12 @@ Usa la skill `/frontend-design` para diseño de UI/UX.
 - Clientes tipados con `Database`, en `lib/supabase/`:
   - `client.ts` — `createClient()` para Client Components (`createBrowserClient`).
   - `server.ts` — `await createClient()` para Server Components, Server Actions y Route Handlers (`createServerClient` + `cookies()`). Un cliente nuevo por request; nunca un singleton global.
+  - `public.ts` — `createPublicClient()` (`supabase-js` sin cookies ni sesión) solo para lecturas públicas dentro de funciones `'use cache'`; nunca para escrituras. Dentro de `'use cache'` no se puede usar `server.ts` (lee `cookies()`).
 - `lib/supabase/database.types.ts` es generado: no editar a mano, regenerar con `npm run db:types`.
+- Migraciones SQL versionadas en `supabase/migrations/` (`AAAAMMDDHHMMSS_nombre.sql`) y aplicadas al remoto con MCP `apply_migration`; después `npm run db:types`.
+- Convenciones de esquema: ids `integer generated always as identity` (las URLs usan una columna `slug`); strings `varchar(n)`, nunca `text`; catálogos cerrados como `enum`.
+- `docs/data-dictionary.md` documenta el esquema `public`; se actualiza con cada migración. Los hooks `.claude/hooks/db-docs.sh` (tras `apply_migration`/DDL) y `db-drift.sh` (al iniciar sesión) avisan cuando la documentación queda desfasada.
+- Tags de caché de lecturas: `games` (catálogo), `scores` (stats globales) y `scores:<gameId>` (top por juego, `gameId` = `games.id`). Las Server Actions de escritura los invalidan con `updateTag`.
 - `cookies()` es API dinámica: con `cacheComponents`, `server.ts` solo puede usarse dentro de `<Suspense>`.
 - `setAll` del cliente server ignora errores de escritura de cookies en Server Components; el refresco de sesión llegará con `proxy.ts` (spec de auth, aún no existe).
 - Sin service role key ni clientes admin.

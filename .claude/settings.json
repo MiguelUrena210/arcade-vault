@@ -11,6 +11,30 @@
             "statusMessage": "Prettier + ESLint..."
           }
         ]
+      },
+      {
+        "matcher": "mcp__supabase__apply_migration|mcp__supabase__execute_sql",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/db-docs.sh",
+            "timeout": 10,
+            "statusMessage": "Revisando docs de la DB..."
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/db-drift.sh",
+            "timeout": 30,
+            "statusMessage": "Comprobando deriva de la DB..."
+          }
+        ]
       }
     ]
   }
