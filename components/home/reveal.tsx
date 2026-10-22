@@ -32,7 +32,10 @@ export function Reveal({
   }, []);
 
   return (
-    <Tag ref={ref as React.RefObject<never>} className={`${className} reveal`.trim()}>
+    <Tag
+      ref={ref as React.RefObject<never>}
+      className={`${className} reveal`.trim()}
+    >
       {children}
     </Tag>
   );

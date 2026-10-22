@@ -4,15 +4,25 @@ import { FeatureIcon } from "@/components/home/feature-icon";
 import { FloatingSilhouettes } from "@/components/home/floating-silhouettes";
 import { MiniCard } from "@/components/home/mini-card";
 import { Reveal } from "@/components/home/reveal";
-import { GAMES } from "@/lib/games";
-import { FAQS, FEATURES, PRICING_PERKS, STATS, TICKER, TOP_TODAY } from "@/lib/home";
+import { getGames } from "@/lib/games";
+import {
+  FAQS,
+  FEATURES,
+  PRICING_PERKS,
+  STATS,
+  TICKER,
+  TOP_TODAY,
+} from "@/lib/home";
 
 export const metadata: Metadata = {
   title: { absolute: "Arcade Vault · El arcade clásico está de vuelta" },
-  description: "Juega los mejores clásicos directamente en tu navegador. Sin descargas. Sin costo.",
+  description:
+    "Juega los mejores clásicos directamente en tu navegador. Sin descargas. Sin costo.",
 };
 
-export default function Home() {
+export default async function Home() {
+  const games = await getGames();
+
   return (
     <div className="home fade-in">
       <section className="home-hero">
@@ -70,7 +80,7 @@ export default function Home() {
           <div className="section-rule"></div>
         </div>
         <div className="mini-rail">
-          {GAMES.slice(0, 6).map((g) => (
+          {games.slice(0, 6).map((g) => (
             <MiniCard key={g.id} game={g} />
           ))}
         </div>
@@ -106,10 +116,16 @@ export default function Home() {
             </div>
             <div className="ticker">
               {TICKER.map((r, i) => (
-                <div key={r.player} className="tick-row" style={{ animationDelay: i * 60 + "ms" }}>
+                <div
+                  key={r.player}
+                  className="tick-row"
+                  style={{ animationDelay: i * 60 + "ms" }}
+                >
                   <span className={"tk-p neon-" + r.color}>{r.player}</span>
                   <span className="tk-mid">▸ {r.game}</span>
-                  <span className="tk-s">+{r.score.toLocaleString("es-ES")}</span>
+                  <span className="tk-s">
+                    +{r.score.toLocaleString("es-ES")}
+                  </span>
                   <span className="tk-t">{r.time}</span>
                 </div>
               ))}
@@ -118,7 +134,9 @@ export default function Home() {
 
           <div className="activity-card">
             <div className="ac-head">
-              <div className="ac-title pixel neon-magenta">▸ TOP JUGADORES · HOY</div>
+              <div className="ac-title pixel neon-magenta">
+                ▸ TOP JUGADORES · HOY
+              </div>
               <Link
                 href="/hall-of-fame"
                 className="lb-link"
@@ -131,14 +149,30 @@ export default function Home() {
               {TOP_TODAY.map((r, i) => (
                 <div
                   key={r.player}
-                  className={"top-row" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")}
+                  className={
+                    "top-row" +
+                    (i === 0
+                      ? " top1"
+                      : i === 1
+                        ? " top2"
+                        : i === 2
+                          ? " top3"
+                          : "")
+                  }
                 >
-                  <span className="tp-rk">#{String(r.rank).padStart(2, "0")}</span>
+                  <span className="tp-rk">
+                    #{String(r.rank).padStart(2, "0")}
+                  </span>
                   <span className="tp-bar">
-                    <span className="tp-fill" style={{ width: 100 - i * 16 + "%" }}></span>
+                    <span
+                      className="tp-fill"
+                      style={{ width: 100 - i * 16 + "%" }}
+                    ></span>
                   </span>
                   <span className="tp-p">{r.player}</span>
-                  <span className="tp-s">{r.score.toLocaleString("es-ES")}</span>
+                  <span className="tp-s">
+                    {r.score.toLocaleString("es-ES")}
+                  </span>
                 </div>
               ))}
             </div>
@@ -166,7 +200,11 @@ export default function Home() {
                 <li key={p}>✔ {p}</li>
               ))}
             </ul>
-            <Link href="/login" className="btn xl pulse" style={{ width: "100%" }}>
+            <Link
+              href="/login"
+              className="btn xl pulse"
+              style={{ width: "100%" }}
+            >
               EMPEZAR GRATIS →
             </Link>
             <div className="pc-foot">No pedimos tarjeta. Nunca lo haremos.</div>
@@ -193,7 +231,9 @@ export default function Home() {
         <Link href="/games" className="btn xl pulse final-cta">
           INSERTAR MONEDA →
         </Link>
-        <div className="final-tag">Gratis. Sin registro obligatorio. Empieza en segundos.</div>
+        <div className="final-tag">
+          Gratis. Sin registro obligatorio. Empieza en segundos.
+        </div>
       </Reveal>
     </div>
   );

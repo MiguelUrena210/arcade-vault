@@ -4,7 +4,7 @@ import type { Game } from "@/lib/games";
 export function MiniCard({ game }: { game: Game }) {
   return (
     <Link
-      href={`/games/${game.id}`}
+      href={`/games/${game.slug}`}
       className="mini-card"
       style={{ display: "block", color: "inherit", textDecoration: "none" }}
     >

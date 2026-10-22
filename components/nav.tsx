@@ -29,10 +29,16 @@ export function Nav() {
           <Link href="/" className={isActive("inicio") ? "active" : ""}>
             Inicio
           </Link>
-          <Link href="/games" className={isActive("biblioteca") ? "active" : ""}>
+          <Link
+            href="/games"
+            className={isActive("biblioteca") ? "active" : ""}
+          >
             Biblioteca
           </Link>
-          <Link href="/hall-of-fame" className={isActive("salon") ? "active" : ""}>
+          <Link
+            href="/hall-of-fame"
+            className={isActive("salon") ? "active" : ""}
+          >
             Salón de la Fama
           </Link>
         </div>
@@ -58,25 +64,48 @@ export function Nav() {
         onClick={close}
       ></div>
       <aside className={"av-mobile-panel" + (open ? " open" : "")}>
-        <div className="pixel neon-cyan" style={{ fontSize: 11, marginBottom: 16 }}>
+        <div
+          className="pixel neon-cyan"
+          style={{ fontSize: 11, marginBottom: 16 }}
+        >
           MENÚ
         </div>
-        <Link href="/" className={isActive("inicio") ? "active" : ""} onClick={close}>
+        <Link
+          href="/"
+          className={isActive("inicio") ? "active" : ""}
+          onClick={close}
+        >
           Inicio
         </Link>
-        <Link href="/games" className={isActive("biblioteca") ? "active" : ""} onClick={close}>
+        <Link
+          href="/games"
+          className={isActive("biblioteca") ? "active" : ""}
+          onClick={close}
+        >
           Biblioteca
         </Link>
-        <Link href="/hall-of-fame" className={isActive("salon") ? "active" : ""} onClick={close}>
+        <Link
+          href="/hall-of-fame"
+          className={isActive("salon") ? "active" : ""}
+          onClick={close}
+        >
           Salón de la Fama
         </Link>
-        <Link href="/login" className={isActive("auth") ? "active" : ""} onClick={close}>
+        <Link
+          href="/login"
+          className={isActive("auth") ? "active" : ""}
+          onClick={close}
+        >
           Iniciar Sesión
         </Link>
         <div style={{ flex: 1 }}></div>
         <div
           className="pixel"
-          style={{ fontSize: 9, color: "var(--ink-faint)", letterSpacing: "0.16em" }}
+          style={{
+            fontSize: 9,
+            color: "var(--ink-faint)",
+            letterSpacing: "0.16em",
+          }}
         >
           CRÉDITOS · 03
         </div>

@@ -1,10 +1,34 @@
 import Link from "next/link";
-import { GAMES } from "@/lib/games";
-import { seededScores } from "@/lib/scores";
+import type { Game } from "@/lib/games";
+import type { ScoreRow } from "@/lib/scores";
 
-export function HallOfFame({ gameId }: { gameId: string }) {
-  const rows = seededScores(gameId.length * 23 + 7, 12);
+function PodiumInfo({
+  row,
+  scoreStyle,
+}: {
+  row?: ScoreRow;
+  scoreStyle?: React.CSSProperties;
+}) {
+  return (
+    <>
+      <div className="name">{row?.name ?? "—"}</div>
+      <div className="score" style={scoreStyle}>
+        {row?.score.toLocaleString("es-ES") ?? "—"}
+      </div>
+      <div className="date">{row?.date ?? "—"}</div>
+    </>
+  );
+}
 
+export function HallOfFame({
+  gameId,
+  games,
+  rows,
+}: {
+  gameId: string;
+  games: Game[];
+  rows: ScoreRow[];
+}) {
   return (
     <div className="av-hall fade-in">
       <div className="hall-head">
@@ -15,11 +39,11 @@ export function HallOfFame({ gameId }: { gameId: string }) {
       </div>
 
       <div className="hall-tabs">
-        {GAMES.map((g) => (
+        {games.map((g) => (
           <Link
-            key={g.id}
-            href={`/hall-of-fame?game=${g.id}`}
-            className={"chip" + (gameId === g.id ? " active" : "")}
+            key={g.slug}
+            href={`/hall-of-fame?game=${g.slug}`}
+            className={"chip" + (gameId === g.slug ? " active" : "")}
           >
             {g.title}
           </Link>
@@ -29,29 +53,27 @@ export function HallOfFame({ gameId }: { gameId: string }) {
       <div className="podium">
         <div className="podium-slot silver">
           <div className="rank-num">02</div>
-          <div className="name">{rows[1].name}</div>
-          <div className="score">{rows[1].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[1].date}</div>
+          <PodiumInfo row={rows[1]} />
         </div>
         <div className="podium-slot gold">
           <div
             className="pixel"
-            style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.18em" }}
+            style={{
+              fontSize: 9,
+              color: "var(--gold)",
+              letterSpacing: "0.18em",
+            }}
           >
             CAMPEÓN
           </div>
-          <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>01</div>
-          <div className="name">{rows[0].name}</div>
-          <div className="score" style={{ fontSize: 20 }}>
-            {rows[0].score.toLocaleString("es-ES")}
+          <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>
+            01
           </div>
-          <div className="date">{rows[0].date}</div>
+          <PodiumInfo row={rows[0]} scoreStyle={{ fontSize: 20 }} />
         </div>
         <div className="podium-slot bronze">
           <div className="rank-num">03</div>
-          <div className="name">{rows[2].name}</div>
-          <div className="score">{rows[2].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[2].date}</div>
+          <PodiumInfo row={rows[2]} />
         </div>
       </div>
 
@@ -64,9 +86,10 @@ export function HallOfFame({ gameId }: { gameId: string }) {
         </div>
         {rows.map((r, i) => (
           <div
-            key={r.name + i}
+            key={r.rank}
             className={
-              "tr" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")
+              "tr" +
+              (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")
             }
             style={{ animationDelay: `${i * 50}ms` }}
           >
@@ -76,6 +99,19 @@ export function HallOfFame({ gameId }: { gameId: string }) {
             <div className="dt">{r.date}</div>
           </div>
         ))}
+        {rows.length === 0 && (
+          <div
+            className="pixel"
+            style={{
+              textAlign: "center",
+              padding: 48,
+              fontSize: 12,
+              color: "var(--ink-faint)",
+            }}
+          >
+            SIN PUNTUACIONES AÚN
+          </div>
+        )}
       </div>
 
       <div style={{ textAlign: "center", marginTop: 32 }}>

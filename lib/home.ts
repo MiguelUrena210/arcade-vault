@@ -51,13 +51,55 @@ export const STATS: Stat[] = [
 ];
 
 export const TICKER: TickerRow[] = [
-  { player: "NEONFOX", game: "Caída", score: 184220, time: "hace 2 min", color: "magenta" },
-  { player: "PX_KAI", game: "Glotón", score: 96400, time: "hace 5 min", color: "yellow" },
-  { player: "Z3R0COOL", game: "Invasores", score: 54190, time: "hace 8 min", color: "green" },
-  { player: "VAULT_07", game: "Asteroids", score: 41200, time: "hace 12 min", color: "cyan" },
-  { player: "GLITCHA", game: "Bloque Buster", score: 28450, time: "hace 18 min", color: "cyan" },
-  { player: "ARKADYA", game: "Serpentina", score: 7820, time: "hace 24 min", color: "green" },
-  { player: "CYBER_LU", game: "Ranaria", score: 18900, time: "hace 31 min", color: "yellow" },
+  {
+    player: "NEONFOX",
+    game: "Caída",
+    score: 184220,
+    time: "hace 2 min",
+    color: "magenta",
+  },
+  {
+    player: "PX_KAI",
+    game: "Glotón",
+    score: 96400,
+    time: "hace 5 min",
+    color: "yellow",
+  },
+  {
+    player: "Z3R0COOL",
+    game: "Invasores",
+    score: 54190,
+    time: "hace 8 min",
+    color: "green",
+  },
+  {
+    player: "VAULT_07",
+    game: "Asteroids",
+    score: 41200,
+    time: "hace 12 min",
+    color: "cyan",
+  },
+  {
+    player: "GLITCHA",
+    game: "Bloque Buster",
+    score: 28450,
+    time: "hace 18 min",
+    color: "cyan",
+  },
+  {
+    player: "ARKADYA",
+    game: "Serpentina",
+    score: 7820,
+    time: "hace 24 min",
+    color: "green",
+  },
+  {
+    player: "CYBER_LU",
+    game: "Ranaria",
+    score: 18900,
+    time: "hace 31 min",
+    color: "yellow",
+  },
 ];
 
 export const TOP_TODAY: TopRow[] = [

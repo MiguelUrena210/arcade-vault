@@ -7,7 +7,7 @@ import type { Game } from "@/lib/games";
 export function GameCard({ game }: { game: Game }) {
   const router = useRouter();
   const tiltRef = useRef<HTMLDivElement>(null);
-  const href = `/games/${game.id}`;
+  const href = `/games/${game.slug}`;
 
   const onMove = (e: React.MouseEvent) => {
     const el = tiltRef.current;
@@ -41,12 +41,16 @@ export function GameCard({ game }: { game: Game }) {
         <div className="row">
           <div className="score-badge">
             <span>MEJOR PUNTUACIÓN</span>
-            <b>{game.best.toLocaleString("es-ES")}</b>
+            <b>{game.best?.toLocaleString("es-ES") ?? "—"}</b>
           </div>
           <button
             className={
               "btn " +
-              (game.color === "magenta" ? "magenta" : game.color === "yellow" ? "yellow" : "")
+              (game.color === "magenta"
+                ? "magenta"
+                : game.color === "yellow"
+                  ? "yellow"
+                  : "")
             }
             onClick={(e) => {
               e.stopPropagation();
