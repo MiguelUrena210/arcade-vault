@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useReducer, useState } from "react";
+import { AsteroidsCanvas } from "@/components/asteroids-canvas";
+import type { AsteroidsStats, AsteroidsTheme } from "@/games/asteroids/engine";
 import type { Game } from "@/lib/games";
 
 type Run = { score: number; level: number };
@@ -12,26 +14,46 @@ function runReducer(run: Run, action: { type: "tick"; points: number } | { type:
   return { score, level: score % 2500 < 100 ? run.level + 1 : run.level };
 }
 
+const INITIAL_STATS: AsteroidsStats = { score: 0, lives: 3, level: 1 };
+
 export function GamePlayer({ game }: { game: Game }) {
-  const [{ score, level }, dispatch] = useReducer(runReducer, { score: 0, level: 1 });
-  const [lives, setLives] = useState(3);
+  const isAsteroids = game.id === "asteroids";
+  const [sim, dispatch] = useReducer(runReducer, { score: 0, level: 1 });
+  const [simLives, setLives] = useState(3);
+  const [real, setReal] = useState<AsteroidsStats>(INITIAL_STATS);
+  const [theme, setTheme] = useState<AsteroidsTheme>("neon");
+  const [restartKey, setRestartKey] = useState(0);
+  const { score, level } = isAsteroids ? real : sim;
+  const lives = isAsteroids ? real.lives : simLives;
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState("INVITADO");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (over || paused) return;
+    if (isAsteroids || over || paused) return;
     const t = setInterval(
       () => dispatch({ type: "tick", points: Math.floor(10 + Math.random() * 90) }),
       220,
     );
     return () => clearInterval(t);
-  }, [over, paused]);
+  }, [isAsteroids, over, paused]);
+
+  useEffect(() => {
+    if (!isAsteroids || over) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.code === "KeyP" || e.code === "Escape") setPaused((p) => !p);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isAsteroids, over]);
 
   const restart = () => {
     dispatch({ type: "reset" });
     setLives(3);
+    setReal(INITIAL_STATS);
+    setRestartKey((k) => k + 1);
     setPaused(false);
     setOver(false);
     setSaved(false);
@@ -62,6 +84,14 @@ export function GamePlayer({ game }: { game: Game }) {
           <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
+          {isAsteroids && (
+            <button
+              className="btn ghost"
+              onClick={() => setTheme((t) => (t === "neon" ? "classic" : "neon"))}
+            >
+              ESTILO: {theme === "neon" ? "NEÓN" : "CLÁSICO"}
+            </button>
+          )}
           <button className="btn magenta" onClick={() => setOver(true)}>
             FIN
           </button>
@@ -73,13 +103,23 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor"></div>
-            <div className="enemy e1"></div>
-            <div className="enemy e2"></div>
-            <div className="enemy e3"></div>
-            <div className="player-ship"></div>
-          </div>
+          {isAsteroids ? (
+            <AsteroidsCanvas
+              paused={paused || over}
+              theme={theme}
+              restartKey={restartKey}
+              onStats={setReal}
+              onGameOver={() => setOver(true)}
+            />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor"></div>
+              <div className="enemy e1"></div>
+              <div className="enemy e2"></div>
+              <div className="enemy e3"></div>
+              <div className="player-ship"></div>
+            </div>
+          )}
           {paused && (
             <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
               <div>
