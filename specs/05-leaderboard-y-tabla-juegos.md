@@ -1,6 +1,6 @@
 # SPEC 05 — Tabla de juegos y leaderboard en Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 03, SPEC 04
 > **Fecha:** 2026-10-22
 > **Objetivo:** Mover el catálogo de juegos a una tabla `games` de Supabase y guardar/mostrar puntuaciones reales de Asteroids en un leaderboard (`scores`) leído por biblioteca, detalle y Salón de la Fama.
