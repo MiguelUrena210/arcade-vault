@@ -22,7 +22,7 @@
 - `best` sin datos muestra `—`; `plays` sin datos muestra `0`.
 - Server Action `saveScore` en `app/games/[id]/play/actions.ts`: valida, inserta con `lib/supabase/server.ts` y llama `updateTag`.
 - Modal FIN DEL JUEGO (solo si `saves_scores`): GUARDANDO… deshabilitado, error con reintento, éxito con toast actual + enlace VER RANKING a `/hall-of-fame?game=<slug>`.
-- `app/error.tsx` temático ("SEÑAL PERDIDA" + REINTENTAR) cuando falla la lectura de Supabase.
+- `app/error.tsx` temático ("SEÑAL PERDIDA" + REINTENTAR) cuando falla la lectura de Supabase en `/`, `/games` y `/hall-of-fame`.
 - `CLAUDE.md`: documentar `public.ts`, migraciones y tags de caché.
 
 **Fuera (specs futuras):**
@@ -145,7 +145,7 @@ Convenciones:
 3. Reescribir `lib/games.ts` con `getGames`/`getGame` cacheadas y eliminar `GAMES`. Migrar `app/page.tsx`, `app/games/page.tsx` + `components/library.tsx` (prop `games`), `components/game-card.tsx` (`best` null → `—`), `app/games/[id]/page.tsx` y `app/games/[id]/play/page.tsx` (`generateStaticParams` async desde `getGames`). Build pasa; rutas iguales salvo best/plays.
 4. Reescribir `lib/scores.ts` con `getTopScores`. Migrar sidebar de `app/games/[id]/page.tsx` y `components/hall-of-fame.tsx` (tabs desde `getGames`, default primer juego por `sort_order`, estado vacío, podio con huecos). `grep -rn "seededScores" app components lib` vacío.
 5. Crear `app/games/[id]/play/actions.ts` con `saveScore`. Modificar `components/game-player.tsx`: si `game.savesScores`, el botón llama `saveScore` (GUARDANDO…/error+reintento/éxito+VER RANKING); si no, comportamiento simulado actual.
-6. Crear `app/error.tsx` temático ("SEÑAL PERDIDA" + REINTENTAR con `reset`).
+6. Crear `app/error.tsx` temático ("SEÑAL PERDIDA" + REINTENTAR con `retry`, la prop de reintento de esta versión de Next).
 7. `npm run lint` y `npm run build` pasan; verificación manual de criterios.
 
 Antes de los pasos 3–5, leer en `node_modules/next/dist/docs/` `use-cache.md`, `cacheTag.md`, `updateTag.md`, `generate-static-params` y Server Actions (`mutating-data`).
@@ -168,7 +168,7 @@ Antes de los pasos 3–5, leer en `node_modules/next/dist/docs/` `use-cache.md`,
 - [ ] Insert directo con publishable key en `game_id` de `caida` o `score = 2000000` es rechazado por la BD.
 - [ ] Update/delete en `scores` con publishable key no afecta filas.
 - [ ] En `/games/caida/play` GUARDAR PUNTUACIÓN sigue simulado y no inserta filas.
-- [ ] Con URL de Supabase inválida en `.env.local`, las rutas de catálogo muestran "SEÑAL PERDIDA" con REINTENTAR.
+- [ ] Con URL de Supabase inválida en `.env.local` (`next dev`), `/games` y `/hall-of-fame` muestran "SEÑAL PERDIDA" con REINTENTAR.
 - [ ] No se escribe nada en localStorage.
 
 ## Decisiones
@@ -191,6 +191,8 @@ Antes de los pasos 3–5, leer en `node_modules/next/dist/docs/` `use-cache.md`,
 - **Sí:** CHECK de iniciales (`^[A-Z0-9_]{3,10}$`) y score (0–1.000.000) + validación en la action.
 - **No:** anti-trampa server-side. Requiere auth/sesiones de partida; spec futura.
 - **Sí:** ticker de home sigue simulado. Fuera de alcance.
+- **Sí:** criterio de `error.tsx` acotado a `/`, `/games` y `/hall-of-fame`. En detalle y play el fallo ocurre en `generateStaticParams`, previo al boundary.
+- **No:** capturar el error de `generateStaticParams` solo en desarrollo. Código extra solo para que una prueba manual en dev dé el resultado esperado; el build ya falla de forma visible.
 - **Sí:** ids `integer` identity + columna `slug` para URLs. Convención de la BD.
 - **No:** ids `text` ni `bigint`. Los slugs no son claves.
 - **Sí:** `varchar(n)` en lugar de `text` y enums para `cat`/`color`. Convención de la BD.
@@ -198,14 +200,15 @@ Antes de los pasos 3–5, leer en `node_modules/next/dist/docs/` `use-cache.md`,
 
 ## Riesgos
 
-| Riesgo                                                                                            | Mitigación                                                                              |
-| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Inserts anónimos falsificables con la publishable key                                             | CHECK de rango + RLS solo en `saves_scores`; aceptado hasta la spec de auth.            |
-| `next build` requiere Supabase accesible (`generateStaticParams`, prerender)                      | Env en `.env.local`; fallo de build visible, no silencioso.                             |
-| `public.ts` usado fuera de `'use cache'` o `server.ts` dentro (error `next-request-in-use-cache`) | Convención documentada en `CLAUDE.md`; build + `next start` en verificación.            |
-| Caché obsoleta tras insertar                                                                      | `updateTag` de `scores` y `scores:<gameId>` en la action.                               |
-| Vista sin `security_invoker` expone datos saltando RLS                                            | `with (security_invoker = true)` + `get_advisors`.                                      |
-| Seed desincronizado de los textos actuales                                                        | Copiar literal de `lib/games.ts` antes de eliminar `GAMES`; criterio de textos iguales. |
+| Riesgo                                                                                                                      | Mitigación                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Inserts anónimos falsificables con la publishable key                                                                       | CHECK de rango + RLS solo en `saves_scores`; aceptado hasta la spec de auth.                                                         |
+| `next build` requiere Supabase accesible (`generateStaticParams`, prerender)                                                | Env en `.env.local`; fallo de build visible, no silencioso.                                                                          |
+| Con Supabase caído, `/games/<slug>` y `/games/<slug>/play` fallan en `generateStaticParams` antes del boundary (500 en dev) | Aceptado: en producción `generateStaticParams` solo corre en el build, que falla de forma visible. `error.tsx` no cubre estas rutas. |
+| `public.ts` usado fuera de `'use cache'` o `server.ts` dentro (error `next-request-in-use-cache`)                           | Convención documentada en `CLAUDE.md`; build + `next start` en verificación.                                                         |
+| Caché obsoleta tras insertar                                                                                                | `updateTag` de `scores` y `scores:<gameId>` en la action.                                                                            |
+| Vista sin `security_invoker` expone datos saltando RLS                                                                      | `with (security_invoker = true)` + `get_advisors`.                                                                                   |
+| Seed desincronizado de los textos actuales                                                                                  | Copiar literal de `lib/games.ts` antes de eliminar `GAMES`; criterio de textos iguales.                                              |
 
 ## Lo que **no** está en esta spec
 
