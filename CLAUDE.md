@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Arcade Vault: plataforma para jugar online y competir por puntos. Estado actual: scaffold de Create Next App (solo `app/layout.tsx`, `app/page.tsx`, `app/globals.css`). Se sigue Spec Driven Design (`/spec` y `/spec-impl`) con las skills de `Klerith/fernando-skills` (`npx skills@latest add Klerith/fernando-skills`).
 
 ## Skills
+
 Usa la skill `/frontend-design` para diseño de UI/UX.
 
 ## Comandos
@@ -14,6 +15,7 @@ Usa la skill `/frontend-design` para diseño de UI/UX.
 - `npm run dev` — servidor de desarrollo
 - `npm run build` / `npm run start` — build y servidor de producción
 - `npm run lint` — ESLint (flat config, `eslint.config.mjs`)
+- `npm run db:types` — regenera `lib/supabase/database.types.ts` desde el proyecto remoto (requiere `npx supabase login`)
 - No hay test runner configurado.
 
 ## Stack y configuración
@@ -22,6 +24,19 @@ Usa la skill `/frontend-design` para diseño de UI/UX.
 - Alias de imports: `@/*` → raíz del repo.
 - `next.config.ts` activa `cacheComponents`, `partialPrefetching` y `experimental.agentFeedback`; Tailwind se procesa con `@tailwindcss/turbopack` vía `turbopack.rules` para `*.css`.
 - `RootLayout` usa el tipo global `LayoutProps<"/">` (typed routes de Next, sin import).
+- Backend: Supabase (`@supabase/supabase-js`, `@supabase/ssr`; CLI `supabase` como devDependency).
+
+## Supabase
+
+- Proyecto remoto `bffywagyecastmrxbnem` (el de `.mcp.json`). Sin Supabase local ni Docker.
+- Env en `.env.local` (no versionado): `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. `.env.example` versionado con las claves vacías.
+- Clientes tipados con `Database`, en `lib/supabase/`:
+  - `client.ts` — `createClient()` para Client Components (`createBrowserClient`).
+  - `server.ts` — `await createClient()` para Server Components, Server Actions y Route Handlers (`createServerClient` + `cookies()`). Un cliente nuevo por request; nunca un singleton global.
+- `lib/supabase/database.types.ts` es generado: no editar a mano, regenerar con `npm run db:types`.
+- `cookies()` es API dinámica: con `cacheComponents`, `server.ts` solo puede usarse dentro de `<Suspense>`.
+- `setAll` del cliente server ignora errores de escritura de cookies en Server Components; el refresco de sesión llegará con `proxy.ts` (spec de auth, aún no existe).
+- Sin service role key ni clientes admin.
 
 ## Next.js: versión con cambios incompatibles
 
