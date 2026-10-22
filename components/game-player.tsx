@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useReducer, useState } from "react";
 import { AsteroidsCanvas } from "@/components/asteroids-canvas";
+import { saveScore } from "@/app/games/[id]/play/actions";
 import type { AsteroidsStats, AsteroidsTheme } from "@/games/asteroids/engine";
 import type { Game } from "@/lib/games";
 
@@ -32,6 +33,8 @@ export function GamePlayer({ game }: { game: Game }) {
   const [over, setOver] = useState(false);
   const [name, setName] = useState("INVITADO");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAsteroids || over || paused) return;
@@ -65,6 +68,26 @@ export function GamePlayer({ game }: { game: Game }) {
     setPaused(false);
     setOver(false);
     setSaved(false);
+    setSaving(false);
+    setSaveError(null);
+  };
+
+  const save = async () => {
+    if (!game.savesScores) {
+      setSaved(true);
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const result = await saveScore(game.id, name, score);
+      if (result.ok) setSaved(true);
+      else setSaveError(result.error);
+    } catch {
+      setSaveError("No se pudo guardar la puntuación");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -178,17 +201,30 @@ export function GamePlayer({ game }: { game: Game }) {
                   }
                   placeholder="TUS INICIALES"
                 />
-                <button className="btn yellow" onClick={() => setSaved(true)}>
-                  GUARDAR PUNTUACIÓN
+                <button className="btn yellow" onClick={save} disabled={saving}>
+                  {saving ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}
                 </button>
               </div>
             ) : (
               <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
             )}
+            {saveError && !saved && (
+              <div className="toast-saved" style={{ color: "var(--magenta)" }}>
+                ▸ ERROR AL GUARDAR_ {saveError}
+              </div>
+            )}
             <div className="actions">
               <button className="btn" onClick={restart}>
                 JUGAR DE NUEVO
               </button>
+              {saved && game.savesScores && (
+                <Link
+                  href={`/hall-of-fame?game=${game.slug}`}
+                  className="btn yellow"
+                >
+                  VER RANKING
+                </Link>
+              )}
               <Link href="/games" className="btn magenta">
                 VOLVER AL VAULT
               </Link>
