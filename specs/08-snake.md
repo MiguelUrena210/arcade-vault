@@ -1,6 +1,6 @@
 # SPEC 08 — Snake jugable con leaderboard
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 04, SPEC 05, SPEC 06, SPEC 07
 > **Fecha:** 2026-10-23
 > **Objetivo:** Crear en TypeScript el Snake clásico con las frutas de `references/source-assets/snake-assets/` sobre el registro de motores y hacerlo jugable con leaderboard en `/games/snake/play`, reemplazando SERPENTINA.
