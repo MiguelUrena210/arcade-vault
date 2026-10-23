@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useReducer, useState } from "react";
-import { AsteroidsCanvas } from "@/components/asteroids-canvas";
+import { GameCanvas } from "@/components/game-canvas";
 import { saveScore } from "@/app/games/[id]/play/actions";
-import type { AsteroidsStats, AsteroidsTheme } from "@/games/asteroids/engine";
+import { ENGINES } from "@/games/registry";
+import type { EngineStats } from "@/games/types";
 import type { Game } from "@/lib/games";
 
 type Run = { score: number; level: number };
@@ -18,17 +19,17 @@ function runReducer(
   return { score, level: score % 2500 < 100 ? run.level + 1 : run.level };
 }
 
-const INITIAL_STATS: AsteroidsStats = { score: 0, lives: 3, level: 1 };
+const INITIAL_STATS: EngineStats = { score: 0, lives: 3, level: 1 };
 
 export function GamePlayer({ game }: { game: Game }) {
-  const isAsteroids = game.slug === "asteroids";
+  const engine = ENGINES[game.slug];
   const [sim, dispatch] = useReducer(runReducer, { score: 0, level: 1 });
   const [simLives, setLives] = useState(3);
-  const [real, setReal] = useState<AsteroidsStats>(INITIAL_STATS);
-  const [theme, setTheme] = useState<AsteroidsTheme>("neon");
+  const [real, setReal] = useState<EngineStats>(INITIAL_STATS);
+  const [theme, setTheme] = useState(engine?.themes?.[0]?.id);
   const [restartKey, setRestartKey] = useState(0);
-  const { score, level } = isAsteroids ? real : sim;
-  const lives = isAsteroids ? real.lives : simLives;
+  const { score, level } = engine ? real : sim;
+  const lives = engine ? real.lives : simLives;
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState("INVITADO");
@@ -37,17 +38,17 @@ export function GamePlayer({ game }: { game: Game }) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isAsteroids || over || paused) return;
+    if (engine || over || paused) return;
     const t = setInterval(
       () =>
         dispatch({ type: "tick", points: Math.floor(10 + Math.random() * 90) }),
       220,
     );
     return () => clearInterval(t);
-  }, [isAsteroids, over, paused]);
+  }, [engine, over, paused]);
 
   useEffect(() => {
-    if (!isAsteroids || over) return;
+    if (!engine || over) return;
     const onKey = (e: KeyboardEvent) => {
       if (
         e.target instanceof HTMLInputElement ||
@@ -58,7 +59,7 @@ export function GamePlayer({ game }: { game: Game }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isAsteroids, over]);
+  }, [engine, over]);
 
   const restart = () => {
     dispatch({ type: "reset" });
@@ -117,14 +118,16 @@ export function GamePlayer({ game }: { game: Game }) {
           <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
-          {isAsteroids && (
+          {engine?.themes && (
             <button
               className="btn ghost"
-              onClick={() =>
-                setTheme((t) => (t === "neon" ? "classic" : "neon"))
-              }
+              onClick={() => {
+                const themes = engine.themes!;
+                const i = themes.findIndex((t) => t.id === theme);
+                setTheme(themes[(i + 1) % themes.length].id);
+              }}
             >
-              ESTILO: {theme === "neon" ? "NEÓN" : "CLÁSICO"}
+              ESTILO: {engine.themes.find((t) => t.id === theme)?.label}
             </button>
           )}
           <button className="btn magenta" onClick={() => setOver(true)}>
@@ -138,8 +141,10 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          {isAsteroids ? (
-            <AsteroidsCanvas
+          {engine ? (
+            <GameCanvas
+              engine={engine}
+              title={game.title}
               paused={paused || over}
               theme={theme}
               restartKey={restartKey}

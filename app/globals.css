@@ -715,23 +715,99 @@
     );
   }
 
-  .cover-tetro {
+  /* Pozo 10×20 (celda = 5cqh) con 4 filas casi completas y un hueco de
+     ancho 1: la I cae sobre él y su fantasma marca el TETRIS. */
+  .cover-tetris {
+    container-type: size;
     background: radial-gradient(circle at 50% 100%, #2a004a, #0a0a18);
   }
-  .cover-tetro::after {
+  .cover-tetris::before {
     content: "";
     position: absolute;
-    inset: 20% 30% 0 30%;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 25cqh);
+    width: 50cqh;
     background:
-      linear-gradient(#00f5ff, #00f5ff) 0 0/25% 33%,
-      linear-gradient(#ff006e, #ff006e) 25% 0/25% 33%,
-      linear-gradient(#f5ff00, #f5ff00) 50% 33%/25% 33%,
-      linear-gradient(#00ff88, #00ff88) 25% 66%/25% 33%,
-      linear-gradient(#ff7700, #ff7700) 50% 66%/25% 33%,
-      linear-gradient(#aa00ff, #aa00ff) 75% 33%/25% 33%;
-    background-repeat: no-repeat;
-    filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.4));
-    image-rendering: pixelated;
+      repeating-linear-gradient(
+        90deg,
+        rgba(0, 245, 255, 0.12) 0 1px,
+        transparent 1px 10%
+      ),
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 245, 255, 0.12) 0 1px,
+        transparent 1px 5cqh
+      ),
+      linear-gradient(
+          90deg,
+          #8a00d6 0 20%,
+          #00c46c 20% 40%,
+          transparent 40% 50%,
+          #d65f00 50% 70%,
+          #d1005a 70% 90%,
+          #cfd900 90% 100%
+        )
+        left 0 bottom 0 / 100% 5cqh no-repeat,
+      linear-gradient(
+          90deg,
+          #00bfcc 0 10%,
+          #8a00d6 10% 30%,
+          #00c46c 30% 40%,
+          transparent 40% 50%,
+          #cfd900 50% 60%,
+          #d65f00 60% 80%,
+          #00bfcc 80% 100%
+        )
+        left 0 bottom 5cqh / 100% 5cqh no-repeat,
+      linear-gradient(
+          90deg,
+          #d1005a 0 20%,
+          #00bfcc 20% 30%,
+          #cfd900 30% 40%,
+          transparent 40% 50%,
+          #00c46c 50% 70%,
+          #8a00d6 70% 80%,
+          #d65f00 80% 100%
+        )
+        left 0 bottom 10cqh / 100% 5cqh no-repeat,
+      linear-gradient(
+          90deg,
+          #cfd900 0 10%,
+          #d65f00 10% 30%,
+          #8a00d6 30% 40%,
+          transparent 40% 50%,
+          #00bfcc 50% 60%,
+          #d1005a 60% 80%,
+          #00c46c 80% 100%
+        )
+        left 0 bottom 15cqh / 100% 5cqh no-repeat,
+      rgba(4, 4, 20, 0.72);
+    box-shadow:
+      -0.3cqh 0 0 rgba(0, 245, 255, 0.6),
+      0.3cqh 0 0 rgba(0, 245, 255, 0.6),
+      0 0 4cqh rgba(0, 245, 255, 0.12);
+  }
+  /* Una celda en la columna del hueco (col 4, fila 4) más sombras: el resto
+     de la I que cae (filas 5–7) y su fantasma (filas 16–19, alpha 0.4). */
+  .cover-tetris::after {
+    content: "";
+    position: absolute;
+    top: 20cqh;
+    left: calc(50% - 5cqh);
+    width: 5cqh;
+    height: 5cqh;
+    background: #00f5ff;
+    box-shadow:
+      inset 0 0 0 0.3cqh rgba(4, 4, 20, 0.85),
+      0 5cqh 0 -0.3cqh #00f5ff,
+      0 10cqh 0 -0.3cqh #00f5ff,
+      0 15cqh 0 -0.3cqh #00f5ff,
+      0 60cqh 0 -0.3cqh rgba(0, 245, 255, 0.4),
+      0 65cqh 0 -0.3cqh rgba(0, 245, 255, 0.4),
+      0 70cqh 0 -0.3cqh rgba(0, 245, 255, 0.4),
+      0 75cqh 0 -0.3cqh rgba(0, 245, 255, 0.4);
+    filter: drop-shadow(0 0 1.6cqh rgba(0, 245, 255, 0.7));
   }
 
   .cover-snake {

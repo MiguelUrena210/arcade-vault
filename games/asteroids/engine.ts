@@ -10,24 +10,14 @@ import {
   rand,
   type Keys,
 } from "./entities";
+import type { EngineCallbacks, EngineHandle, EngineStats } from "../types";
 import { PALETTES, type AsteroidsTheme, type Palette } from "./theme";
 
 export type { AsteroidsTheme } from "./theme";
 
-export type AsteroidsStats = { score: number; lives: number; level: number };
-
-export type AsteroidsCallbacks = {
-  onStats: (stats: AsteroidsStats) => void;
-  onGameOver: (score: number) => void;
-};
-
-export type AsteroidsHandle = {
-  pause(): void;
-  resume(): void;
-  restart(): void;
-  setTheme(theme: AsteroidsTheme): void;
-  destroy(): void;
-};
+export type AsteroidsStats = EngineStats;
+export type AsteroidsCallbacks = EngineCallbacks;
+export type AsteroidsHandle = EngineHandle;
 
 type Phase = "playing" | "dead" | "gameover";
 
@@ -39,10 +29,12 @@ const isTextTarget = (t: EventTarget | null) =>
 export function createAsteroids(
   canvas: HTMLCanvasElement,
   callbacks: AsteroidsCallbacks,
-  theme: AsteroidsTheme = "neon",
+  theme: string = "neon",
 ): AsteroidsHandle {
   const ctx = canvas.getContext("2d")!;
-  let palette: Palette = PALETTES[theme];
+  const paletteOf = (id: string): Palette =>
+    PALETTES[id as AsteroidsTheme] ?? PALETTES.neon;
+  let palette: Palette = paletteOf(theme);
 
   const keys: Keys = {};
   const justPressed: Keys = {};
@@ -250,7 +242,7 @@ export function createAsteroids(
       initGame();
     },
     setTheme(next) {
-      palette = PALETTES[next];
+      palette = paletteOf(next);
     },
     destroy() {
       cancelAnimationFrame(raf);
