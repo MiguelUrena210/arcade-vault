@@ -3,12 +3,16 @@
 import Link from "next/link";
 import { useEffect, useReducer, useState } from "react";
 import { AsteroidsCanvas } from "@/components/asteroids-canvas";
+import { saveScore } from "@/app/games/[id]/play/actions";
 import type { AsteroidsStats, AsteroidsTheme } from "@/games/asteroids/engine";
 import type { Game } from "@/lib/games";
 
 type Run = { score: number; level: number };
 
-function runReducer(run: Run, action: { type: "tick"; points: number } | { type: "reset" }): Run {
+function runReducer(
+  run: Run,
+  action: { type: "tick"; points: number } | { type: "reset" },
+): Run {
   if (action.type === "reset") return { score: 0, level: 1 };
   const score = run.score + action.points;
   return { score, level: score % 2500 < 100 ? run.level + 1 : run.level };
@@ -17,7 +21,7 @@ function runReducer(run: Run, action: { type: "tick"; points: number } | { type:
 const INITIAL_STATS: AsteroidsStats = { score: 0, lives: 3, level: 1 };
 
 export function GamePlayer({ game }: { game: Game }) {
-  const isAsteroids = game.id === "asteroids";
+  const isAsteroids = game.slug === "asteroids";
   const [sim, dispatch] = useReducer(runReducer, { score: 0, level: 1 });
   const [simLives, setLives] = useState(3);
   const [real, setReal] = useState<AsteroidsStats>(INITIAL_STATS);
@@ -29,11 +33,14 @@ export function GamePlayer({ game }: { game: Game }) {
   const [over, setOver] = useState(false);
   const [name, setName] = useState("INVITADO");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAsteroids || over || paused) return;
     const t = setInterval(
-      () => dispatch({ type: "tick", points: Math.floor(10 + Math.random() * 90) }),
+      () =>
+        dispatch({ type: "tick", points: Math.floor(10 + Math.random() * 90) }),
       220,
     );
     return () => clearInterval(t);
@@ -42,7 +49,11 @@ export function GamePlayer({ game }: { game: Game }) {
   useEffect(() => {
     if (!isAsteroids || over) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
       if (e.code === "KeyP" || e.code === "Escape") setPaused((p) => !p);
     };
     window.addEventListener("keydown", onKey);
@@ -57,6 +68,26 @@ export function GamePlayer({ game }: { game: Game }) {
     setPaused(false);
     setOver(false);
     setSaved(false);
+    setSaving(false);
+    setSaveError(null);
+  };
+
+  const save = async () => {
+    if (!game.savesScores) {
+      setSaved(true);
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const result = await saveScore(game.id, name, score);
+      if (result.ok) setSaved(true);
+      else setSaveError(result.error);
+    } catch {
+      setSaveError("No se pudo guardar la puntuación");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -65,7 +96,9 @@ export function GamePlayer({ game }: { game: Game }) {
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
           <div className="hud-stat">
             <div className="l">Jugador</div>
-            <div className="v" style={{ color: "var(--ink)" }}>{name}</div>
+            <div className="v" style={{ color: "var(--ink)" }}>
+              {name}
+            </div>
           </div>
           <div className="hud-stat">
             <div className="l">Puntuación</div>
@@ -87,7 +120,9 @@ export function GamePlayer({ game }: { game: Game }) {
           {isAsteroids && (
             <button
               className="btn ghost"
-              onClick={() => setTheme((t) => (t === "neon" ? "classic" : "neon"))}
+              onClick={() =>
+                setTheme((t) => (t === "neon" ? "classic" : "neon"))
+              }
             >
               ESTILO: {theme === "neon" ? "NEÓN" : "CLÁSICO"}
             </button>
@@ -95,7 +130,7 @@ export function GamePlayer({ game }: { game: Game }) {
           <button className="btn magenta" onClick={() => setOver(true)}>
             FIN
           </button>
-          <Link href={`/games/${game.id}`} className="btn ghost">
+          <Link href={`/games/${game.slug}`} className="btn ghost">
             SALIR
           </Link>
         </div>
@@ -121,12 +156,22 @@ export function GamePlayer({ game }: { game: Game }) {
             </div>
           )}
           {paused && (
-            <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
+            <div
+              className="crt-content"
+              style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}
+            >
               <div>
-                <div className="pixel neon-yellow" style={{ fontSize: 22 }}>EN PAUSA</div>
+                <div className="pixel neon-yellow" style={{ fontSize: 22 }}>
+                  EN PAUSA
+                </div>
                 <div
                   className="mono"
-                  style={{ fontSize: 11, color: "var(--ink-dim)", marginTop: 10, letterSpacing: "0.16em" }}
+                  style={{
+                    fontSize: 11,
+                    color: "var(--ink-dim)",
+                    marginTop: 10,
+                    letterSpacing: "0.16em",
+                  }}
                 >
                   PULSA REANUDAR PARA CONTINUAR
                 </div>
@@ -151,19 +196,38 @@ export function GamePlayer({ game }: { game: Game }) {
               <div className="input-row">
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
+                  onChange={(e) =>
+                    setName(e.target.value.toUpperCase().slice(0, 10))
+                  }
                   placeholder="TUS INICIALES"
                 />
-                <button className="btn yellow" onClick={() => setSaved(true)}>
-                  GUARDAR PUNTUACIÓN
+                <button className="btn yellow" onClick={save} disabled={saving}>
+                  {saving ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}
                 </button>
               </div>
             ) : (
               <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
             )}
+            {saveError && !saved && (
+              <div className="toast-saved" style={{ color: "var(--magenta)" }}>
+                ▸ ERROR AL GUARDAR_ {saveError}
+              </div>
+            )}
             <div className="actions">
-              <button className="btn" onClick={restart}>JUGAR DE NUEVO</button>
-              <Link href="/games" className="btn magenta">VOLVER AL VAULT</Link>
+              <button className="btn" onClick={restart}>
+                JUGAR DE NUEVO
+              </button>
+              {saved && game.savesScores && (
+                <Link
+                  href={`/hall-of-fame?game=${game.slug}`}
+                  className="btn yellow"
+                >
+                  VER RANKING
+                </Link>
+              )}
+              <Link href="/games" className="btn magenta">
+                VOLVER AL VAULT
+              </Link>
             </div>
           </div>
         </div>
