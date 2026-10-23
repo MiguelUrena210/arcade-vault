@@ -1,6 +1,6 @@
 # SPEC 06 — Tetris jugable con leaderboard
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 04, SPEC 05
 > **Fecha:** 2026-10-23
 > **Objetivo:** Portar a TypeScript el Tetris de `references/started-games/03 - tetris/` sobre un registro genérico de motores y hacerlo jugable con leaderboard en `/games/tetris/play`, reemplazando CAÍDA.
