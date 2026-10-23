@@ -68,6 +68,12 @@ Políticas RLS:
 - `scores_insert`: INSERT para `anon`, `authenticated` solo si el `games` referenciado tiene `saves_scores = true`.
 - Sin update/delete.
 
+## Funciones y event triggers
+
+### `rls_auto_enable()`
+
+Función en `public`, ligada al event trigger `ensure_rls` (`ddl_command_end`). Habilita RLS automáticamente en tablas nuevas. Viene de la plataforma Supabase, no de las migraciones del repo. No aparece en `database.types.ts`.
+
 ## Vistas
 
 ### `game_stats` (`security_invoker = true`)

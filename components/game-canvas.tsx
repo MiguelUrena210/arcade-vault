@@ -1,20 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  createAsteroids,
-  type AsteroidsCallbacks,
-  type AsteroidsHandle,
-  type AsteroidsTheme,
-} from "@/games/asteroids/engine";
+import type { EngineCallbacks, EngineDef, EngineHandle } from "@/games/types";
 
-type Props = AsteroidsCallbacks & {
+type Props = EngineCallbacks & {
+  engine: EngineDef;
+  title: string;
   paused: boolean;
-  theme: AsteroidsTheme;
+  theme?: string;
   restartKey: number;
 };
 
-export function AsteroidsCanvas({
+export function GameCanvas({
+  engine,
+  title,
   paused,
   theme,
   restartKey,
@@ -22,8 +21,8 @@ export function AsteroidsCanvas({
   onGameOver,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const handleRef = useRef<AsteroidsHandle | null>(null);
-  const callbacksRef = useRef<AsteroidsCallbacks>({ onStats, onGameOver });
+  const handleRef = useRef<EngineHandle | null>(null);
+  const callbacksRef = useRef<EngineCallbacks>({ onStats, onGameOver });
   const themeRef = useRef(theme);
   const restartRef = useRef(restartKey);
 
@@ -33,7 +32,7 @@ export function AsteroidsCanvas({
   });
 
   useEffect(() => {
-    const handle = createAsteroids(
+    const handle = engine.create(
       canvasRef.current!,
       {
         onStats: (s) => callbacksRef.current.onStats(s),
@@ -46,7 +45,7 @@ export function AsteroidsCanvas({
       handle.destroy();
       handleRef.current = null;
     };
-  }, []);
+  }, [engine]);
 
   useEffect(() => {
     if (paused) handleRef.current?.pause();
@@ -54,7 +53,7 @@ export function AsteroidsCanvas({
   }, [paused]);
 
   useEffect(() => {
-    handleRef.current?.setTheme(theme);
+    if (theme) handleRef.current?.setTheme?.(theme);
   }, [theme]);
 
   useEffect(() => {
@@ -66,9 +65,9 @@ export function AsteroidsCanvas({
   return (
     <canvas
       ref={canvasRef}
-      width={800}
-      height={600}
-      aria-label="Asteroids"
+      width={engine.width}
+      height={engine.height}
+      aria-label={title}
       style={{
         position: "absolute",
         inset: 0,
