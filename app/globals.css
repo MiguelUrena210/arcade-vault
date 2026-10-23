@@ -866,22 +866,68 @@
     filter: drop-shadow(0 0 1.6cqh rgba(0, 245, 255, 0.7));
   }
 
+  /* Tablero de celdas de 9cqh con la serpiente en S (cola tenue → cabeza
+     clara) mirando a una fruta magenta a dos celdas. Origen X = 50cqw. */
   .cover-snake {
-    background: linear-gradient(135deg, #003a2a, #0a0a18);
+    container-type: size;
+    background:
+      radial-gradient(
+        ellipse at 62% 60%,
+        rgba(0, 255, 136, 0.12),
+        transparent 60%
+      ),
+      linear-gradient(180deg, #00241a, #05050f);
   }
-  .cover-snake::after {
+  .cover-snake::before {
     content: "";
     position: absolute;
     inset: 0;
-    background-image:
-      radial-gradient(circle at 70% 50%, var(--magenta) 0 6px, transparent 7px),
-      linear-gradient(90deg, var(--green) 0 40px, transparent 40px) 20% 50% /
-        200px 12px no-repeat,
-      linear-gradient(90deg, var(--green) 0 12px, transparent 12px)
-        calc(20% + 40px) calc(50% - 12px) / 12px 12px no-repeat,
-      linear-gradient(90deg, var(--green) 0 12px, transparent 12px)
-        calc(20% + 28px) calc(50% - 12px) / 12px 12px no-repeat;
-    filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.6));
+    background:
+      /* fruta: tallo, brillo y cuerpo */
+      linear-gradient(#00ff88, #00ff88) left calc(50cqw + 49cqh) top 53.2cqh /
+        1cqh 2.4cqh no-repeat,
+      radial-gradient(
+        circle 0.9cqh at calc(50cqw + 48.4cqh) 57.3cqh,
+        rgba(255, 255, 255, 0.85) 0 0.8cqh,
+        transparent 0.9cqh
+      ),
+      radial-gradient(
+        circle 3.6cqh at calc(50cqw + 49.5cqh) 58.5cqh,
+        #ff006e 0 3.4cqh,
+        transparent 3.6cqh
+      ),
+      /* cuerpo: del tramo de la cola al de la cabeza */
+        linear-gradient(#00d97f, #00ff88) left calc(50cqw + 10cqh) top 55cqh /
+        25cqh 7cqh no-repeat,
+      linear-gradient(#00b872, #00d97f) left calc(50cqw + 10cqh) top 37cqh /
+        7cqh 25cqh no-repeat,
+      linear-gradient(#008f58, #00b872) left calc(50cqw - 17cqh) top 37cqh /
+        34cqh 7cqh no-repeat,
+      linear-gradient(#00663f, #008f58) left calc(50cqw - 17cqh) top 37cqh /
+        7cqh 34cqh no-repeat,
+      linear-gradient(90deg, #00402a, #00663f) left calc(50cqw - 44cqh) top
+        64cqh / 34cqh 7cqh no-repeat,
+      /* grilla */
+        linear-gradient(90deg, rgba(0, 255, 136, 0.09) 0 1px, transparent 1px)
+        calc(50cqw) 0 / 9cqh 9cqh,
+      linear-gradient(0deg, rgba(0, 255, 136, 0.09) 0 1px, transparent 1px) 0
+        0 / 9cqh 9cqh;
+    filter: drop-shadow(0 0 1.2cqh rgba(0, 255, 136, 0.35));
+  }
+  /* Cabeza con dos ojos, en la celda siguiente al último tramo. */
+  .cover-snake::after {
+    content: "";
+    position: absolute;
+    top: 54.5cqh;
+    left: calc(50cqw + 27.5cqh);
+    width: 8cqh;
+    height: 8cqh;
+    border-radius: 1.5cqh 4cqh 4cqh 1.5cqh;
+    background:
+      radial-gradient(circle at 64% 26%, #05050f 0 0.9cqh, transparent 1cqh),
+      radial-gradient(circle at 64% 74%, #05050f 0 0.9cqh, transparent 1cqh),
+      #d4ffea;
+    filter: drop-shadow(0 0 1.4cqh rgba(0, 255, 136, 0.8));
   }
 
   .cover-glot {
