@@ -14,7 +14,9 @@ fi
 
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
-if npx supabase gen types typescript --project-id bffywagyecastmrxbnem >"$tmp" 2>/dev/null && [ -s "$tmp" ]; then
+# Se formatea con Prettier igual que el archivo del repo (npm run db:types) para comparar solo contenido.
+if npx supabase gen types typescript --project-id bffywagyecastmrxbnem 2>/dev/null |
+  npx prettier --stdin-filepath lib/supabase/database.types.ts >"$tmp" 2>/dev/null && [ -s "$tmp" ]; then
   if ! diff -q "$tmp" lib/supabase/database.types.ts >/dev/null 2>&1; then
     issues+=("el esquema remoto difiere de lib/supabase/database.types.ts (cambio hecho fuera de Claude Code)")
   fi
