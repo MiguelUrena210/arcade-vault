@@ -12,6 +12,9 @@ Estado: home, biblioteca, detalle, reproductor y salón de la fama con datos de 
 
 - `/spec` — escribe `specs/NN-slug.md` en `Borrador`; el usuario la pasa a `Aprobado`; `/spec-impl NN-slug` la implementa (crea rama `spec-NN-slug` sin preguntar, `AutoCreateBranch: true` en `specs/.spec-config.yml`) y la marca `Implementado`.
 - `/add-game <carpeta de references/started-games | descripción>` — skill propia (`.claude/skills/add-game/`): `/spec` especializada para portar un juego canvas con leaderboard. Solo escribe la spec. Referencias: `contract.md` (motor y registro) y `checklist.md` (migración, portada, leaderboard).
+- Agente `game-planner` (`.claude/agents/game-planner.md`): usar cuando se pregunte qué juego añadir. Analiza `games/registry.ts`, `specs/`, `references/started-games/` y el catálogo Supabase (solo SQL de lectura); filtra por diversidad de categoría, clásico y porteo fácil a Canvas 2D; rankea por puntuación competitiva, reutilización, complejidad S/M/L y riesgo. Devuelve top 3 + recomendación y el siguiente paso `/add-game`. No escribe specs ni código.
+  - Solo escribe en `references/suggestions.md` (tabla `Fecha | Juego | Slug | Rank | Motivo | Estado`; estados `sugerido`/`aceptado`/`descartado`/`implementado`, reconciliados con registro y specs) y en `.claude/agent-memory/game-planner/MEMORY.md` (preferencias del usuario; `memory: project`). No re-sugiere juegos ya registrados.
+  - Flujo: `game-planner` → `/add-game` → usuario aprueba → `/spec-impl`.
 - `/frontend-design` — diseño de UI/UX.
 - `supabase` y `supabase-postgres-best-practices` — cargar antes de cualquier tarea Supabase, SQL o migración.
 - Skills externas instaladas en `.agents/skills/` (`skills-lock.json`: `anthropics/skills`, `Klerith/fernando-skills`, `supabase/agent-skills`) y enlazadas por symlink en `.claude/skills/`. Instalar con `npx skills@latest add <repo>`.
@@ -35,7 +38,7 @@ Estado: home, biblioteca, detalle, reproductor y salón de la fama con datos de 
 - Rutas (`app/`): `/` (home), `/games` (biblioteca), `/games/[id]` (detalle + top), `/games/[id]/play` (reproductor; `actions.ts` con Server Action `saveScore`), `/hall-of-fame`, `/login`. `error.tsx` cubre fallos de lectura de Supabase; `not-found.tsx`. `[id]` es el `slug` del juego.
 - `components/`: `nav`, `library`, `game-card`, `game-player`, `game-canvas`, `hall-of-fame`, `auth-form`, `home/*`.
 - `lib/`: `games.ts` (`getGames`/`getGame`, `'use cache'`), `scores.ts` (`getTopScores`), `game-types.ts` (tipo `Game` y enums derivados de `Database`), `home.ts` (contenido estático de la home).
-- `references/`: originales de solo lectura — juegos JS (`started-games/`), templates de diseño (`templates/`) y assets (`source-assets/`).
+- `references/`: originales de solo lectura — juegos JS (`started-games/`), templates de diseño (`templates/`) y assets (`source-assets/`). Excepción: `suggestions.md`, escrito por `game-planner`.
 
 ## Motores de juego
 
