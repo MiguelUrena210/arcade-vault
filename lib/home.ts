@@ -53,7 +53,7 @@ export const STATS: Stat[] = [
 export const TICKER: TickerRow[] = [
   {
     player: "NEONFOX",
-    game: "Caída",
+    game: "Tetris",
     score: 184220,
     time: "hace 2 min",
     color: "magenta",
