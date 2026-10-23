@@ -1,6 +1,6 @@
 # SPEC 07 — Arkanoid jugable con leaderboard
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 04, SPEC 05, SPEC 06
 > **Fecha:** 2026-10-23
 > **Objetivo:** Portar a TypeScript el Arkanoid de `references/started-games/04 - arkanoid/` sobre el registro de motores y hacerlo jugable con leaderboard en `/games/arkanoid/play`, reemplazando BLOQUE BUSTER.
