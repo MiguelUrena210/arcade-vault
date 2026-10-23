@@ -81,7 +81,7 @@ export const TICKER: TickerRow[] = [
   },
   {
     player: "GLITCHA",
-    game: "Bloque Buster",
+    game: "Arkanoid",
     score: 28450,
     time: "hace 18 min",
     color: "cyan",

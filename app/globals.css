@@ -692,27 +692,83 @@
     inset: 0;
   }
 
-  .cover-bricks {
+  /* Muro de 10 columnas × 5 filas (la última, gris) con un túnel abierto en
+     las columnas 6–7: la bola sale por él con su estela y deja dos
+     fragmentos cayendo; la pala espera abajo. Celda = 10cqw × 7cqh. */
+  .cover-arkanoid {
+    container-type: size;
     background:
-      repeating-linear-gradient(
-          90deg,
-          #ff006e 0 32px,
-          #ffae00 32px 64px,
-          #00f5ff 64px 96px,
-          #00ff88 96px 128px
-        )
-        0 0/100% 32px,
-      #15151f;
+      radial-gradient(
+        ellipse at 60% 40%,
+        rgba(0, 245, 255, 0.1),
+        transparent 55%
+      ),
+      linear-gradient(180deg, #0b0d2a, #05050f);
   }
-  .cover-bricks::after {
+  .cover-arkanoid::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent 0 32px,
-      rgba(0, 0, 0, 0.4) 32px 33px
-    );
+    background:
+      /* pala */
+      linear-gradient(90deg, #00f5ff, #e8ffff 50%, #00f5ff) left 40cqw bottom
+        6cqh / 22cqw 3cqh no-repeat,
+      /* fragmentos de los bloques rotos */ linear-gradient(#7d8299, #7d8299)
+        left 73cqw top 52cqh / 5cqw 2.4cqh no-repeat,
+      linear-gradient(#ffae00, #ffae00) left 78cqw top 66cqh / 4cqw 2cqh
+        no-repeat,
+      /* juntas del muro: columnas y filas */
+        repeating-linear-gradient(90deg, transparent 0 9.3%, #05050f 9.3% 10%)
+        left 0 top 8cqh / 100% 35cqh no-repeat,
+      repeating-linear-gradient(180deg, transparent 0 6cqh, #05050f 6cqh 7cqh)
+        left 0 top 8cqh / 100% 35cqh no-repeat,
+      /* filas: magenta, ámbar, cian, verde con túnel; gris completa */
+        linear-gradient(
+          90deg,
+          #7d8299 0 50%,
+          transparent 50% 70%,
+          #7d8299 70% 100%
+        )
+        left 0 top 36cqh / 100% 7cqh no-repeat,
+      linear-gradient(
+          90deg,
+          #00ff88 0 50%,
+          transparent 50% 70%,
+          #00ff88 70% 100%
+        )
+        left 0 top 29cqh / 100% 7cqh no-repeat,
+      linear-gradient(
+          90deg,
+          #00f5ff 0 50%,
+          transparent 50% 70%,
+          #00f5ff 70% 100%
+        )
+        left 0 top 22cqh / 100% 7cqh no-repeat,
+      linear-gradient(
+          90deg,
+          #ffae00 0 50%,
+          transparent 50% 70%,
+          #ffae00 70% 100%
+        )
+        left 0 top 15cqh / 100% 7cqh no-repeat,
+      linear-gradient(#ff006e, #ff006e) left 0 top 8cqh / 100% 7cqh no-repeat;
+    filter: drop-shadow(0 0 1.2cqh rgba(0, 245, 255, 0.35));
+  }
+  /* Bola con estela de tres puntos que encoge hacia la pala. */
+  .cover-arkanoid::after {
+    content: "";
+    position: absolute;
+    top: 46cqh;
+    left: calc(60cqw - 2cqh);
+    width: 4cqh;
+    height: 4cqh;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+      -2.2cqw 9cqh 0 -0.5cqh rgba(0, 245, 255, 0.7),
+      -4.4cqw 18cqh 0 -1cqh rgba(0, 245, 255, 0.45),
+      -6.6cqw 27cqh 0 -1.4cqh rgba(0, 245, 255, 0.25),
+      0 0 2cqh 0.6cqh rgba(0, 245, 255, 0.85);
   }
 
   /* Pozo 10×20 (celda = 5cqh) con 4 filas casi completas y un hueco de
