@@ -1,4 +1,5 @@
 import { createAsteroids } from "./asteroids/engine";
+import { createTetris } from "./tetris/engine";
 import type { EngineDef } from "./types";
 
 export const ENGINES: Record<string, EngineDef> = {
@@ -10,6 +11,17 @@ export const ENGINES: Record<string, EngineDef> = {
     themes: [
       { id: "neon", label: "NEÓN" },
       { id: "classic", label: "CLÁSICO" },
+    ],
+  },
+  tetris: {
+    create: createTetris,
+    width: 800,
+    height: 600,
+    themes: [
+      { id: "neon", label: "NEÓN" },
+      { id: "retro", label: "RETRO" },
+      { id: "pastel", label: "PASTEL" },
+      { id: "pixel", label: "PIXEL" },
     ],
   },
 };
