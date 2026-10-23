@@ -1,5 +1,6 @@
 import { createArkanoid } from "./arkanoid/engine";
 import { createAsteroids } from "./asteroids/engine";
+import { createSnake } from "./snake/engine";
 import { createTetris } from "./tetris/engine";
 import type { EngineDef } from "./types";
 
@@ -16,6 +17,15 @@ export const ENGINES: Record<string, EngineDef> = {
   },
   arkanoid: {
     create: createArkanoid,
+    width: 800,
+    height: 600,
+    themes: [
+      { id: "neon", label: "NEÓN" },
+      { id: "classic", label: "CLÁSICO" },
+    ],
+  },
+  snake: {
+    create: createSnake,
     width: 800,
     height: 600,
     themes: [
