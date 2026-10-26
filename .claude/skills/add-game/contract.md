@@ -32,6 +32,17 @@ export type EngineHandle = {
   setTheme?(theme: string): void;
 };
 
+export type TouchKey = {
+  code: string; // KeyboardEvent.code emitido
+  label: string; // texto visible en el botón
+  repeat?: boolean; // autorrepetición al mantener
+};
+
+export type TouchControls = {
+  dpad: Partial<Record<"up" | "down" | "left" | "right", TouchKey>>;
+  buttons: TouchKey[]; // 0–3, se pintan a la derecha en este orden
+};
+
 export type EngineDef = {
   create(
     canvas: HTMLCanvasElement,
@@ -41,6 +52,7 @@ export type EngineDef = {
   width: number;
   height: number;
   themes?: { id: string; label: string }[]; // el primero es el default
+  controls?: TouchControls; // sin controls = sin mando táctil
 };
 ```
 
@@ -50,7 +62,7 @@ export type EngineDef = {
 import type { EngineDef } from "./types";
 
 export const ENGINES: Record<string, EngineDef> = {
-  // [games.slug]: { create, width, height, themes }
+  // [games.slug]: { create, width, height, themes, controls }
 };
 ```
 
@@ -62,7 +74,7 @@ La clave es `games.slug`. Un slug ausente del registro = juego simulado (arena a
 - Port fiel de constantes y mecánicas de la referencia (tamaños, velocidades, puntos, tiempos).
 - Loop con `requestAnimationFrame`; `dt` en segundos con clamp (0.05).
 - `onStats` solo cuando cambia score/lives/level (no a 60 fps).
-- Input por `KeyboardEvent.code` sobre `window`. `preventDefault` solo en teclas del juego (flechas, `Space`) y nunca si `event.target` es `input`/`textarea` (el modal tiene input de iniciales).
+- Input por `KeyboardEvent.code` sobre `window`. El motor acepta `KeyboardEvent` sintéticos (no filtra `isTrusted`): el mando táctil (`components/touch-controls.tsx`) los emite en `window`. `preventDefault` solo en teclas del juego (flechas, `Space`) y nunca si `event.target` es `input`/`textarea` (el modal tiene input de iniciales).
 - En pausa o game over el motor no avanza ni consume input.
 - `destroy()` cancela rAF y quita **todos** los listeners (Strict Mode monta dos veces; SALIR y volver no duplica loops).
 - Sin HUD, GAME OVER, menús, récords ni sonido en canvas: la plataforma pone HUD React, modal FIN DEL JUEGO y guardado.
@@ -82,5 +94,5 @@ La clave es `games.slug`. Un slug ausente del registro = juego simulado (arena a
 ## Añadir un juego (con registro ya creado)
 
 1. Crear `games/<slug>/` según la estructura.
-2. Añadir la entrada en `ENGINES`.
+2. Añadir la entrada en `ENGINES`, con `controls` (mando táctil: cruceta + 0–3 botones con las teclas del juego).
 3. Sin cambios en `GamePlayer` ni `game-canvas.tsx`, salvo que el juego exija una capacidad nueva (se documenta en la spec).
