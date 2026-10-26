@@ -63,6 +63,16 @@ export function GamePlayer({ game }: { game: Game }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [engine, over]);
 
+  // Pestaña oculta o móvil bloqueado: pausa sin reanudar sola
+  useEffect(() => {
+    if (over) return;
+    const onVisibility = () => {
+      if (document.hidden) setPaused(true);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [over]);
+
   const restart = () => {
     dispatch({ type: "reset" });
     setLives(3);
