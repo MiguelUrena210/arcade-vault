@@ -42,6 +42,7 @@ export const ENGINES: Record<string, EngineDef> = {
       { id: "retro", label: "RETRO" },
       { id: "pastel", label: "PASTEL" },
       { id: "pixel", label: "PIXEL" },
+      { id: "toy", label: "JUGUETE" },
     ],
   },
 };
