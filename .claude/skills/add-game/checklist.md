@@ -37,7 +37,7 @@ Solo datos (update/insert): el diccionario no cambia, pero el drift hook puede a
 
 ## 3. Motor y registro
 
-- Motor en `games/<slug>/` según `contract.md`; entrada en `games/registry.ts`.
+- Motor en `games/<slug>/` según `contract.md`; entrada en `games/registry.ts` con `controls` (mando táctil diseñado por `mobile-porter`, SPEC 11).
 - Con Supabase: `slug` del registro = `games.slug` exacto.
 
 ## 4. Leaderboard (ya implementado, solo verificar)
@@ -65,6 +65,7 @@ Solo datos (update/insert): el diccionario no cambia, pero el drift hook puede a
 - [ ] Iniciales inválidas (`AB`) muestran error, no insertan y el botón vuelve a estar activo.
 - [ ] Asteroids y los juegos simulados restantes siguen como antes (arena simulada, sin leaderboard en los simulados).
 - [ ] No se escribe nada en localStorage.
+- [ ] En emulación táctil (iPhone 12, 390×844 y 844×390) el juego es jugable de principio a fin con el mando; en escritorio el mando no se ve.
 
 ## 6. Cierre
 

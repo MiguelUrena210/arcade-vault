@@ -3,7 +3,7 @@ name: add-game
 description: Diseña la spec (estado Borrador) para portar o añadir un juego jugable (canvas) con leaderboard Supabase en Arcade Vault, a partir de una carpeta de references/started-games/ o de una descripción. No implementa: la implementación se hace después con /spec-impl.
 disable-model-invocation: true
 argument-hint: '<carpeta de references/started-games o descripción del juego>'
-allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(ls:*), Bash(date:*), Bash(cat:*), mcp__supabase__list_tables, mcp__supabase__list_migrations, mcp__supabase__execute_sql
+allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Agent(mobile-porter), Bash(ls:*), Bash(date:*), Bash(cat:*), mcp__supabase__list_tables, mcp__supabase__list_migrations, mcp__supabase__execute_sql
 ---
 
 # /add-game — Spec para añadir un juego real con leaderboard
@@ -39,7 +39,7 @@ Argumento: `$ARGUMENTS`
 
 ## Fase 1 — Contexto
 
-1. Lee `CLAUDE.md`, `specs/04-asteroids.md`, `specs/05-leaderboard-y-tabla-juegos.md`, `contract.md` y `checklist.md` (en este directorio), `.claude/skills/spec/SKILL.md` y `.claude/skills/spec/template.md`.
+1. Lee `CLAUDE.md`, `specs/04-asteroids.md`, `specs/05-leaderboard-y-tabla-juegos.md`, `contract.md` y `checklist.md` (en este directorio), `.claude/skills/spec/SKILL.md`, `.claude/skills/spec/template.md` y `specs/11-controles-tactiles.md` (mando táctil).
 2. Si `$ARGUMENTS` es una carpeta de `references/started-games/`: lee su `CLAUDE.md`/`README.md`, todo el JS/HTML/CSS y sus specs. Inventaría: mecánicas, constantes, stats (score/vidas/nivel), input, persistencia local (localStorage), menús propios, sonido, assets, resolución del canvas.
 3. Si es una descripción: no hay referencia; el motor se diseña desde cero con el mismo contrato.
 4. Si `$ARGUMENTS` está vacío, pide la carpeta o una frase describiendo el juego.
@@ -52,7 +52,8 @@ No saltes esta fase. Si el usuario quiere ir rápido, recuérdale que las pregun
 - **Catálogo:** ¿reemplaza un juego simulado o es fila nueva? Lista los candidatos con `execute_sql`: `select slug, title, sort_order from public.games where not saves_scores order by sort_order`. Recomienda el de temática afín (ej. tetris → `caida`).
 - **Ficha:** slug, title, short, long (sin mencionar lo que no se porta), `cat`, `color` (enums existentes; uno nuevo implica migración de enum), portada `cover-*`.
 - **Stats:** cómo mapear a `score` / `lives` / `level` del HUD (si el juego no tiene vidas, ¿se oculta o fija en 1?).
-- **Descartes:** récords/localStorage, menús propios, HUD y GAME OVER en canvas, sonido, táctil. Por defecto se descartan y van a "Fuera".
+- **Descartes:** récords/localStorage, menús propios, HUD y GAME OVER en canvas, sonido. Por defecto se descartan y van a "Fuera". El táctil **no** se descarta: el mando lo diseña `mobile-porter` en la Fase 4.
+- **Input:** inventaría todas las teclas (código, acción, modo en que actúa) para que la spec las documente; `mobile-porter` deriva el mando de ahí.
 - **Temas:** ¿variantes visuales (como NEÓN/CLÁSICO)? Default y sin persistir.
 - **Canvas:** resolución interna fija que encaje en `.crt-screen` (4:3) o con letterbox.
 
@@ -65,6 +66,8 @@ Formato e idioma de SPEC 04/05 y de `template.md`: cabecera (`Estado: Borrador`,
 - Si Fase 2 quedó completa, escribe la spec entera sin pedir confirmación sección a sección. Si falta información, desarrolla las secciones una a una y espera confirmación en cada una.
 - `/spec-impl` no lee esta skill: el plan debe bastarse a sí mismo.
   - Si `games/registry.ts` no existe, el plan **empieza** con el bootstrap de `contract.md`.
+  - El paso que registra el juego en `ENGINES` incluye `controls` (mando táctil). No escribas tú la sección `## Mando táctil`: la añade `mobile-porter` en la Fase 4.
+  - El motor acepta `KeyboardEvent` sintéticos (no filtra `isTrusted`), según `contract.md`.
   - Cada paso cita la referencia que aplica: `.claude/skills/add-game/contract.md` (motor, registro) o `.claude/skills/add-game/checklist.md` (migración, portada, leaderboard).
   - El paso de migración incluye el SQL concreto, `apply_migration`, `npm run db:types`, `get_advisors` (security) y, si cambia esquema/enums/políticas, `docs/data-dictionary.md`.
   - Indica leer la guía correspondiente de `node_modules/next/dist/docs/` antes de tocar Client Components, Server Actions o caché.
@@ -78,9 +81,12 @@ Formato e idioma de SPEC 04/05 y de `template.md`: cabecera (`Estado: Borrador`,
 2. Fecha: la del contexto de sesión, nunca otra.
 3. Verifica que cada spec de `Depende de` exista en `specs/`; si no, avísalo en vez de dejar una referencia rota.
 4. Escribe `specs/NN-<slug>.md` directamente, sin pedir permiso. Pregunta solo si el archivo ya existe.
+4b. Lanza el subagente `mobile-porter` con la ruta de la spec (caso A: spec en `Borrador` sin entrada en `ENGINES`). Añade `## Mando táctil` (tabla, objeto `controls` y criterios) a la spec. Revisa su salida:
+    - Si avisa de bloqueos (input no soportado por el mando, juego no jugable de principio a fin con ≤3 botones, `isTrusted`), comunícalos al usuario junto a la confirmación.
+    - Si `mobile-porter` falla o no está disponible, avísalo y deja en la spec la nota "Mando táctil pendiente: ejecutar `mobile-porter`"; no lo diseñes tú.
 5. Estado `Borrador`. **Nunca** lo marques `Aprobado`: lo cambia el usuario tras releerla.
 6. Si `specs/.spec-config.yml` no existe, créalo como lo hace `/spec` (`AutoCreateBranch: true`). Si existe, no lo toques.
-7. Confirma al usuario: ruta creada, estado `Borrador`, que debe cambiarlo a `Aprobado` tras releerla, y que el siguiente paso es `/spec-impl NN-<slug>`.
+7. Confirma al usuario: ruta creada, estado `Borrador`, mando táctil propuesto (tabla de `mobile-porter`), que debe cambiarlo a `Aprobado` tras releerla, y que el siguiente paso es `/spec-impl NN-<slug>`.
 8. **Para aquí.**
 
 ## Reglas duras
