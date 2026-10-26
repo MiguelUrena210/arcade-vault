@@ -139,7 +139,7 @@ export class Asteroid {
     ctx.rotate(this.rot);
     glow(ctx, palette, palette.asteroid);
     ctx.strokeStyle = palette.asteroid;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = palette.lineWidth;
     ctx.lineJoin = "round";
     ctx.beginPath();
     ctx.moveTo(this.verts[0][0], this.verts[0][1]);
@@ -219,7 +219,7 @@ export class Ship {
     ctx.rotate(this.angle);
     glow(ctx, palette, palette.ship);
     ctx.strokeStyle = palette.ship;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = palette.lineWidth;
     ctx.lineJoin = "round";
 
     // Silueta clásica: triángulo con muesca trasera

@@ -49,7 +49,7 @@ const isTextTarget = (t: EventTarget | null) =>
   t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement;
 
 const themeOf = (id: string): SnakeTheme =>
-  id === "classic" ? "classic" : "neon";
+  Object.hasOwn(PALETTES, id) ? (id as SnakeTheme) : "neon";
 
 export function createSnake(
   canvas: HTMLCanvasElement,
@@ -156,9 +156,9 @@ export function createSnake(
   // ── Draw ────────────────────────────────────────────────────────────────────
   const draw = () => {
     const pal = PALETTES[currentTheme];
-    drawBoard(ctx, currentTheme, pal);
-    if (fruit) drawFruit(ctx, fruit, sheet);
-    drawSnake(ctx, currentTheme, pal, snake, dir);
+    drawBoard(ctx, pal);
+    if (fruit) drawFruit(ctx, fruit, sheet, pal);
+    drawSnake(ctx, pal, snake, dir);
     if (mode === "ready") drawHint(ctx, pal, "PULSA UNA FLECHA");
   };
 

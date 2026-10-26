@@ -3,15 +3,18 @@ import type { Ball, Brick, Paddle } from "./entities";
 import type { BrickColor } from "./levels";
 import { EXPLOSION_FRAMES, SPRITES, type Sprite } from "./sprites";
 
-export type ArkanoidTheme = "neon" | "classic";
+export type ArkanoidTheme = "neon" | "classic" | "poster";
 
 export type Palette = {
   bg: string;
   paddle: string;
   ball: string;
   bricks: Record<BrickColor, string>;
-  glow: number; // shadowBlur; 0 en CLÁSICO
-  text: string;
+  brickStroke: string | null; // contorno de ladrillo vectorial; null = sin contorno
+  glow: number; // shadowBlur; 0 en CLÁSICO y PÓSTER
+  text: string; // título, niveles y "ESPACIO PARA LANZAR"
+  accent: string; // nivel seleccionado en el menú
+  hint: string; // pista inferior del menú
 };
 
 export type Explosion = {
@@ -37,8 +40,11 @@ export const PALETTES: Record<ArkanoidTheme, Palette> = {
       hotpink: "#ff006e",
       gray: "#8a8fa3",
     },
+    brickStroke: null,
     glow: 8,
     text: "#00f5ff",
+    accent: "#f5ff00",
+    hint: "rgba(255, 255, 255, 0.6)",
   },
   classic: {
     bg: "#000",
@@ -53,8 +59,30 @@ export const PALETTES: Record<ArkanoidTheme, Palette> = {
       hotpink: "#e0449c",
       gray: "#8a8a8a",
     },
+    brickStroke: null,
     glow: 0,
     text: "#fff",
+    accent: "#e6d83a",
+    hint: "rgba(255, 255, 255, 0.6)",
+  },
+  poster: {
+    bg: "#f2ead8",
+    paddle: "#263238",
+    ball: "#1a1a1a",
+    bricks: {
+      red: "#c62828",
+      cyan: "#00838f",
+      green: "#2e7d32",
+      magenta: "#8e24aa",
+      yellow: "#a66a00",
+      hotpink: "#d81b60",
+      gray: "#6d6d6d",
+    },
+    brickStroke: "#1a1a1a",
+    glow: 0,
+    text: "#1a1a1a",
+    accent: "#c62828",
+    hint: "#4a4a4a",
   },
 };
 
@@ -62,8 +90,8 @@ export const PALETTES: Record<ArkanoidTheme, Palette> = {
 const FALLBACK: Palette = { ...PALETTES.neon, glow: 0 };
 
 export function paletteFor(theme: ArkanoidTheme, sheetReady: boolean): Palette {
-  if (theme === "neon") return PALETTES.neon;
-  return sheetReady ? PALETTES.classic : FALLBACK;
+  if (theme === "classic" && !sheetReady) return FALLBACK;
+  return PALETTES[theme];
 }
 
 function drawSprite(
@@ -163,6 +191,11 @@ export function drawBricks(
       withGlow(ctx, pal.bricks[b.color], pal.glow, () =>
         ctx.fillRect(b.x + 1, b.y + 1, b.w - 2, b.h - 2),
       );
+      if (pal.brickStroke) {
+        ctx.strokeStyle = pal.brickStroke;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(b.x + 2, b.y + 2, b.w - 4, b.h - 4);
+      }
     }
     if (b.color === "gray") drawGrayDamage(ctx, b);
   }

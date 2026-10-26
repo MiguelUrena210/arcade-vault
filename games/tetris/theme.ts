@@ -1,10 +1,11 @@
-export type TetrisTheme = "neon" | "retro" | "pastel" | "pixel";
+export type TetrisTheme = "neon" | "retro" | "pastel" | "pixel" | "toy";
 
 export type Skin = {
   label: string;
   colors: string[]; // [sin uso, I, O, T, S, Z, J, L]
   background: string;
-  grid: string;
+  grid: string; // grilla, borde del pozo y marco de NEXT
+  text: string; // etiqueta NEXT
   drawBlock(
     ctx: CanvasRenderingContext2D,
     px: number,
@@ -17,6 +18,7 @@ export type Skin = {
 
 const BACKGROUND = "#000";
 const GRID = "rgba(255, 255, 255, 0.06)";
+const TEXT = "rgba(255, 255, 255, 0.6)";
 
 function roundRectPath(
   ctx: CanvasRenderingContext2D,
@@ -54,6 +56,7 @@ export const SKINS: Record<TetrisTheme, Skin> = {
     ],
     background: BACKGROUND,
     grid: "rgba(0, 255, 255, 0.12)",
+    text: TEXT,
     drawBlock(ctx, px, py, size, color, alpha) {
       ctx.shadowColor = color;
       ctx.shadowBlur = 12;
@@ -84,6 +87,7 @@ export const SKINS: Record<TetrisTheme, Skin> = {
     ],
     background: BACKGROUND,
     grid: GRID,
+    text: TEXT,
     drawBlock(ctx, px, py, size, color, alpha) {
       ctx.globalAlpha = alpha;
       ctx.fillStyle = color;
@@ -108,6 +112,7 @@ export const SKINS: Record<TetrisTheme, Skin> = {
     ],
     background: BACKGROUND,
     grid: GRID,
+    text: TEXT,
     drawBlock(ctx, px, py, size, color, alpha) {
       ctx.globalAlpha = alpha;
       ctx.fillStyle = color;
@@ -137,6 +142,7 @@ export const SKINS: Record<TetrisTheme, Skin> = {
     ],
     background: BACKGROUND,
     grid: GRID,
+    text: TEXT,
     drawBlock(ctx, px, py, size, color, alpha) {
       const n = 7;
       const p = Math.floor((size - 2) / n);
@@ -159,6 +165,48 @@ export const SKINS: Record<TetrisTheme, Skin> = {
       ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
       ctx.fillRect(ox + p * 3, oy + p * 2, p, p);
       ctx.fillRect(ox + p * 2, oy + p * 3, p, p);
+      ctx.globalAlpha = 1;
+    },
+  },
+
+  toy: {
+    label: "JUGUETE",
+    colors: [
+      "",
+      "#0277bd",
+      "#9c7100",
+      "#7b1fa2",
+      "#2e7d32",
+      "#c62828",
+      "#283593",
+      "#e65100",
+    ],
+    background: "#f3f0e8",
+    grid: "rgba(0, 0, 0, 0.10)",
+    text: "#3a3a3a",
+    drawBlock(ctx, px, py, size, color, alpha) {
+      const cx = px + size / 2;
+      const cy = py + size / 2;
+      const r = size * 0.22;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.fillRect(px + 1, py + 1, size - 2, size - 2);
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.35)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px + 1.5, py + 1.5, size - 3, size - 3);
+      // tachuela: sombra inferior-derecha, relleno y brillo superior-izquierdo
+      ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+      ctx.beginPath();
+      ctx.arc(cx + 1, cy + 1, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - 0.5, Math.PI * 0.75, Math.PI * 1.75);
+      ctx.stroke();
       ctx.globalAlpha = 1;
     },
   },

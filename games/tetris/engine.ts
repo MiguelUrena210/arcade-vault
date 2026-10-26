@@ -192,7 +192,7 @@ export function createTetris(
     ctx.strokeStyle = skin.grid;
     ctx.lineWidth = 2;
     ctx.strokeRect(NEXT_X - 1, NEXT_Y - 1, NEXT_SIZE + 2, NEXT_SIZE + 2);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+    ctx.fillStyle = skin.text;
     ctx.font = "bold 14px monospace";
     ctx.textBaseline = "bottom";
     ctx.fillText("NEXT", NEXT_X, NEXT_Y - 8);
