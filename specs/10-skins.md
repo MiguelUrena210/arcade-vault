@@ -1,6 +1,6 @@
 # SPEC 10 — Skins claras y oscuras por juego
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 04, SPEC 06, SPEC 07, SPEC 08
 > **Fecha:** 2026-10-26
 > **Objetivo:** Que cada juego jugable (Asteroids, Arkanoid, Snake, Tetris) tenga ≥3 skins, con ≥1 de fondo claro y ≥1 de fondo oscuro, contraste WCAG ≥3:1 en cada elemento jugable (texto ≥4.5:1) y sin colores hardcodeados que rompan en fondo claro.

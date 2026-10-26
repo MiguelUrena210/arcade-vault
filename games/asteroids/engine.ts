@@ -21,6 +21,7 @@ export type AsteroidsHandle = EngineHandle;
 
 type Phase = "playing" | "dead" | "gameover";
 
+const GRID_STEP = 40; // px entre líneas de cuadrícula (CUADERNO)
 const GAME_KEYS = ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
 const isTextTarget = (t: EventTarget | null) =>
@@ -200,9 +201,25 @@ export function createAsteroids(
   };
 
   // ── Draw ────────────────────────────────────────────────────────────────────
+  const drawGrid = (color: string) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = GRID_STEP; x < W; x += GRID_STEP) {
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, H);
+    }
+    for (let y = GRID_STEP; y < H; y += GRID_STEP) {
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+    }
+    ctx.stroke();
+  };
+
   const draw = () => {
     ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, W, H);
+    if (palette.grid) drawGrid(palette.grid);
 
     particles.forEach((p) => p.draw(ctx, palette));
     asteroids.forEach((a) => a.draw(ctx, palette));
