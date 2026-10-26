@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useReducer, useRef, useState } from "react";
+import {
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { GameCanvas } from "@/components/game-canvas";
 import { TouchControls } from "@/components/touch-controls";
 import { saveScore } from "@/app/games/[id]/play/actions";
@@ -18,6 +24,11 @@ function runReducer(
   if (action.type === "reset") return { score: 0, level: 1 };
   const score = run.score + action.points;
   return { score, level: score % 2500 < 100 ? run.level + 1 : run.level };
+}
+
+function subscribeFullscreen(onChange: () => void) {
+  document.addEventListener("fullscreenchange", onChange);
+  return () => document.removeEventListener("fullscreenchange", onChange);
 }
 
 const INITIAL_STATS: EngineStats = { score: 0, lives: 3, level: 1 };
@@ -38,6 +49,17 @@ export function GamePlayer({ game }: { game: Game }) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  // Fullscreen API: false en servidor e hidratación, valor real en cliente
+  const fsEnabled = useSyncExternalStore(
+    subscribeFullscreen,
+    () => document.fullscreenEnabled,
+    () => false,
+  );
+  const fullscreen = useSyncExternalStore(
+    subscribeFullscreen,
+    () => !!document.fullscreenElement,
+    () => false,
+  );
 
   useEffect(() => {
     if (engine || over || paused) return;
@@ -73,6 +95,16 @@ export function GamePlayer({ game }: { game: Game }) {
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, [over]);
 
+  // Fin de partida: sale de pantalla completa para que el modal sea visible
+  useEffect(() => {
+    if (over && document.fullscreenElement) void document.exitFullscreen();
+  }, [over]);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) void document.exitFullscreen();
+    else void stageRef.current?.requestFullscreen();
+  };
+
   const restart = () => {
     dispatch({ type: "reset" });
     setLives(3);
@@ -106,7 +138,7 @@ export function GamePlayer({ game }: { game: Game }) {
   return (
     <div className="av-player fade-in">
       <div className="player-hud">
-        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+        <div className="hud-stats">
           <div className="hud-stat">
             <div className="l">Jugador</div>
             <div className="v" style={{ color: "var(--ink)" }}>
@@ -140,6 +172,11 @@ export function GamePlayer({ game }: { game: Game }) {
               }}
             >
               ESTILO: {engine.themes.find((t) => t.id === theme)?.label}
+            </button>
+          )}
+          {fsEnabled && (
+            <button className="btn ghost" onClick={toggleFullscreen}>
+              {fullscreen ? "SALIR PANTALLA" : "PANTALLA"}
             </button>
           )}
           <button className="btn magenta" onClick={() => setOver(true)}>
@@ -222,6 +259,9 @@ export function GamePlayer({ game }: { game: Game }) {
                     setName(e.target.value.toUpperCase().slice(0, 10))
                   }
                   placeholder="TUS INICIALES"
+                  autoCapitalize="characters"
+                  autoComplete="off"
+                  enterKeyHint="done"
                 />
                 <button className="btn yellow" onClick={save} disabled={saving}>
                   {saving ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}

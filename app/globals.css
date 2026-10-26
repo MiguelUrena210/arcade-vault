@@ -1227,9 +1227,15 @@
     color: var(--yellow);
     text-shadow: 0 0 6px rgba(245, 255, 0, 0.5);
   }
+  .hud-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
   .hud-actions {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   .crt {
@@ -1608,6 +1614,7 @@
     border: 1px solid var(--line);
     outline: 0;
     font-family: var(--mono);
+    font-size: 16px; /* ≥16px: evita el zoom de iOS al enfocar */
   }
   .modal .input-row input:focus {
     border-color: var(--cyan);
@@ -1974,6 +1981,49 @@
     }
     .av-player {
       padding: 0 16px 32px;
+      margin: 16px auto;
+    }
+    /* HUD compacto: cabe a 360px sin scroll horizontal */
+    .player-hud {
+      gap: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+    .hud-stats {
+      gap: 14px;
+    }
+    .hud-stat .v {
+      font-size: 12px;
+    }
+    .hud-actions {
+      gap: 6px;
+    }
+    .hud-actions .btn {
+      padding: 10px 12px;
+      font-size: 8px;
+      letter-spacing: 0.12em;
+    }
+    .crt {
+      padding: 12px;
+      border-radius: 18px;
+    }
+    .modal {
+      padding: 22px 18px;
+    }
+    .modal .input-row {
+      flex-wrap: wrap;
+    }
+    .modal .input-row input {
+      min-width: 0;
+    }
+  }
+
+  /* objetivos táctiles ≥48px */
+  @media (pointer: coarse) {
+    .hud-actions .btn,
+    .modal .btn,
+    .modal .input-row input {
+      min-height: 48px;
     }
   }
 
