@@ -13,6 +13,7 @@ export const ENGINES: Record<string, EngineDef> = {
     themes: [
       { id: "neon", label: "NEÓN" },
       { id: "classic", label: "CLÁSICO" },
+      { id: "notebook", label: "CUADERNO" },
     ],
   },
   arkanoid: {
@@ -22,6 +23,7 @@ export const ENGINES: Record<string, EngineDef> = {
     themes: [
       { id: "neon", label: "NEÓN" },
       { id: "classic", label: "CLÁSICO" },
+      { id: "poster", label: "PÓSTER" },
     ],
   },
   snake: {
@@ -31,6 +33,7 @@ export const ENGINES: Record<string, EngineDef> = {
     themes: [
       { id: "neon", label: "NEÓN" },
       { id: "classic", label: "CLÁSICO" },
+      { id: "amber", label: "ÁMBAR" },
     ],
   },
   tetris: {

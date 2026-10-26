@@ -22,6 +22,7 @@ import {
   drawBricks,
   drawExplosions,
   drawPaddle,
+  PALETTES,
   paletteFor,
   type ArkanoidTheme,
   type Explosion,
@@ -43,7 +44,7 @@ const isTextTarget = (t: EventTarget | null) =>
   t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement;
 
 const themeOf = (id: string): ArkanoidTheme =>
-  id === "classic" ? "classic" : "neon";
+  Object.hasOwn(PALETTES, id) ? (id as ArkanoidTheme) : "neon";
 
 export function createArkanoid(
   canvas: HTMLCanvasElement,
@@ -247,14 +248,14 @@ export function createArkanoid(
     ctx.font = "bold 28px monospace";
     LEVELS.forEach((_, i) => {
       const label = `NIVEL ${i + 1}`;
-      ctx.fillStyle = i === menuIndex ? pal.bricks.yellow : pal.text;
+      ctx.fillStyle = i === menuIndex ? pal.accent : pal.text;
       ctx.fillText(
         i === menuIndex ? `> ${label} <` : label,
         W / 2,
         H / 2 - 30 + i * 44,
       );
     });
-    ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+    ctx.fillStyle = pal.hint;
     ctx.font = "16px monospace";
     ctx.fillText(
       "↑↓ mover · Enter elegir · Espacio para empezar",
