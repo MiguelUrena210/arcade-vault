@@ -1,6 +1,6 @@
 # SPEC 11 — Controles táctiles en móvil
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 04, SPEC 06, SPEC 07, SPEC 08
 > **Fecha:** 2026-10-26
 > **Objetivo:** Que Asteroids, Arkanoid, Snake y Tetris sean jugables de principio a fin en móviles y tablets táctiles mediante un mando virtual en pantalla, sin modificar los motores.

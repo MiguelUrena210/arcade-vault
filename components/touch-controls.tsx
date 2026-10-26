@@ -56,6 +56,7 @@ export function TouchControls({ controls, disabled }: Props) {
     emit("keydown", key.code);
     if (key.repeat) {
       held.delay = setTimeout(() => {
+        emit("keydown", key.code, true);
         held.interval = setInterval(
           () => emit("keydown", key.code, true),
           REPEAT_INTERVAL,

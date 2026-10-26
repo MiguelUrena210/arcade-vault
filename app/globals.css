@@ -1475,8 +1475,13 @@
       grid-area: crt;
       justify-self: center;
       width: 100%;
-      /* alto del CRT = pantalla 4:3 + ~44px de marco y pie */
-      max-width: calc((100dvh - 44px) * 4 / 3 + 20px);
+      /* alto del CRT = pantalla 4:3 + ~52px de marco y pie; se reservan
+         ~96px para .av-nav (sticky), que taparía la parte superior */
+      max-width: calc((100dvh - 96px - 52px) * 4 / 3 + 20px);
+    }
+    /* en pantalla completa no hay nav: el CRT usa todo el alto */
+    .player-stage:fullscreen .crt {
+      max-width: calc((100dvh - 24px - 52px) * 4 / 3 + 20px);
     }
   }
 
