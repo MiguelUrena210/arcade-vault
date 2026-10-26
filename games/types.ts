@@ -13,6 +13,17 @@ export type EngineHandle = {
   setTheme?(theme: string): void;
 };
 
+export type TouchKey = {
+  code: string; // KeyboardEvent.code emitido
+  label: string; // texto visible en el botón
+  repeat?: boolean; // autorrepetición al mantener
+};
+
+export type TouchControls = {
+  dpad: Partial<Record<"up" | "down" | "left" | "right", TouchKey>>;
+  buttons: TouchKey[]; // 0–3, se pintan a la derecha en este orden
+};
+
 export type EngineDef = {
   create(
     canvas: HTMLCanvasElement,
@@ -22,4 +33,5 @@ export type EngineDef = {
   width: number;
   height: number;
   themes?: { id: string; label: string }[]; // el primero es el default
+  controls?: TouchControls; // sin controls = sin mando táctil
 };
