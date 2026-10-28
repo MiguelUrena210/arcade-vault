@@ -225,9 +225,8 @@ export function createHoraPunta(
 
   function draw(): void {
     const p = PALETTES[currentTheme];
-    const classic = currentTheme === "classic";
-    drawBoard(ctx, p, classic, homes);
-    drawTraffic(ctx, p, classic, lanes);
+    drawBoard(ctx, p, homes);
+    drawTraffic(ctx, p, lanes);
     homes.forEach((occupied, i) => {
       if (!occupied) return;
       const x = CONFIG.HOME_COLS[i] * CONFIG.CELL + CONFIG.CELL / 2;

@@ -1,7 +1,7 @@
 import { CONFIG, VEHICLE_LEN, type VehicleKind } from "./config";
 import type { Dir, Lane } from "./entities";
 
-export type HoraPuntaTheme = "neon" | "classic";
+export type HoraPuntaTheme = "neon" | "classic" | "diorama";
 
 export type Palette = {
   bg: string; // asfalto
@@ -9,11 +9,19 @@ export type Palette = {
   hedge: string; // seto de la meta
   home: string; // madriguera libre
   laneLine: string; // líneas discontinuas
+  medianLine: string | null; // línea central doble en la mediana; null = sin línea
   frog: string;
   frogEye: string;
+  frogPupil: string;
   vehicles: Record<VehicleKind, string>;
+  vehicleStyle: "outline" | "flat";
+  vehicleBody: string; // relleno interior en estilo outline
+  headlight: string; // faros en estilo outline
+  wheel: string; // ruedas en estilo flat
+  windshield: string; // parabrisas en estilo flat
   timer: string;
   timerLow: string; // < 5 s
+  timerTrack: string; // pista de la barra
   glow: number; // shadowBlur; 0 en CLÁSICO
   text: string;
 };
@@ -25,27 +33,65 @@ export const PALETTES: Record<HoraPuntaTheme, Palette> = {
     hedge: "#0e3a1f",
     home: "#050d08",
     laneLine: "#00f5ff",
+    medianLine: null,
     frog: "#00ff88",
     frogEye: "#d4ffea",
+    frogPupil: "#0a0a14",
     vehicles: { moto: "#00f5ff", car: "#ff006e", truck: "#ffd60a" },
+    vehicleStyle: "outline",
+    vehicleBody: "rgba(10, 10, 20, 0.85)",
+    headlight: "#ffffff",
+    wheel: "#1c1c22",
+    windshield: "rgba(255, 255, 255, 0.35)",
     timer: "#00ff88",
     timerLow: "#ff3355",
+    timerTrack: "rgba(0, 0, 0, 0.35)",
     glow: 12,
     text: "#eaffff",
   },
   classic: {
     bg: "#4a4a52",
-    sidewalk: "#8a6fd6",
+    sidewalk: "#3d2f73",
     hedge: "#1e9e3c",
     home: "#0d0d12",
     laneLine: "#e8e8e8",
+    medianLine: "#f2c21e",
     frog: "#35c23a",
     frogEye: "#ffffff",
-    vehicles: { moto: "#ffd23f", car: "#ff5d5d", truck: "#d9d9e6" },
+    frogPupil: "#4a4a52",
+    vehicles: { moto: "#ffd23f", car: "#ff6b6b", truck: "#d9d9e6" },
+    vehicleStyle: "flat",
+    vehicleBody: "rgba(10, 10, 20, 0.85)",
+    headlight: "#ffffff",
+    wheel: "#1c1c22",
+    windshield: "rgba(255, 255, 255, 0.35)",
     timer: "#35c23a",
     timerLow: "#e03030",
+    timerTrack: "rgba(0, 0, 0, 0.35)",
     glow: 0,
     text: "#ffffff",
+  },
+  diorama: {
+    bg: "#dcd8cc",
+    sidewalk: "#efe9da",
+    hedge: "#7cb342",
+    home: "#f4efe2",
+    laneLine: "#4a4a4a",
+    medianLine: "#b8860b",
+    frog: "#1b5e20",
+    frogEye: "#fffdf5",
+    frogPupil: "#1a1a1a",
+    vehicles: { moto: "#1565c0", car: "#c62828", truck: "#5d4037" },
+    vehicleStyle: "flat",
+    vehicleBody: "rgba(10, 10, 20, 0.85)",
+    headlight: "#262626",
+    wheel: "#262626",
+    windshield: "rgba(255, 255, 255, 0.5)",
+    timer: "#1b5e20",
+    timerLow: "#b71c1c",
+    timerTrack: "rgba(0, 0, 0, 0.15)",
+    glow: 0,
+    text: "#262626",
   },
 };
 
@@ -58,7 +104,6 @@ const DASH_YS = [2, 3, 4, 5, 6, 9, 10, 11, 12, 13].map((row) => row * CELL);
 export function drawBoard(
   ctx: CanvasRenderingContext2D,
   p: Palette,
-  classic: boolean,
   homes: boolean[],
 ): void {
   ctx.fillStyle = p.bg;
@@ -88,10 +133,12 @@ export function drawBoard(
   // Líneas discontinuas entre carriles.
   ctx.save();
   ctx.strokeStyle = p.laneLine;
-  ctx.lineWidth = classic ? 4 : 3;
+  ctx.lineWidth = p.vehicleStyle === "flat" ? 4 : 3;
   ctx.setLineDash([24, 16]);
-  if (!classic) ctx.shadowBlur = p.glow;
-  if (!classic) ctx.shadowColor = p.laneLine;
+  if (p.glow > 0) {
+    ctx.shadowBlur = p.glow;
+    ctx.shadowColor = p.laneLine;
+  }
   ctx.beginPath();
   for (const y of DASH_YS) {
     ctx.moveTo(0, y);
@@ -100,9 +147,9 @@ export function drawBoard(
   ctx.stroke();
   ctx.restore();
 
-  // CLÁSICO: línea central amarilla doble en la mediana.
-  if (classic) {
-    ctx.fillStyle = "#f2c21e";
+  // Línea central doble en la mediana, si la paleta la define.
+  if (p.medianLine !== null) {
+    ctx.fillStyle = p.medianLine;
     const mid = MEDIAN_ROW * CELL + CELL / 2;
     ctx.fillRect(0, mid - 5, WIDTH, 3);
     ctx.fillRect(0, mid + 2, WIDTH, 3);
@@ -112,7 +159,6 @@ export function drawBoard(
 export function drawTraffic(
   ctx: CanvasRenderingContext2D,
   p: Palette,
-  classic: boolean,
   lanes: Lane[],
 ): void {
   for (const lane of lanes) {
@@ -122,14 +168,14 @@ export function drawTraffic(
     const h = CELL - 12;
     for (const v of lane.vehicles) {
       if (v.x + len < 0 || v.x > WIDTH) continue;
-      if (classic) {
+      if (p.vehicleStyle === "flat") {
         // Vehículo plano con ruedas.
-        ctx.fillStyle = "#1c1c22";
+        ctx.fillStyle = p.wheel;
         ctx.fillRect(v.x + 6, y - 3, 12, h + 6);
         ctx.fillRect(v.x + len - 18, y - 3, 12, h + 6);
         ctx.fillStyle = color;
         ctx.fillRect(v.x, y, len, h);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+        ctx.fillStyle = p.windshield;
         ctx.fillRect(v.x + 4, y + 4, len - 8, 6);
       } else {
         // Rectángulo redondeado con contorno luminoso y faros.
@@ -138,14 +184,14 @@ export function drawTraffic(
         ctx.shadowColor = color;
         ctx.beginPath();
         ctx.roundRect(v.x, y, len, h, 8);
-        ctx.fillStyle = "rgba(10, 10, 20, 0.85)";
+        ctx.fillStyle = p.vehicleBody;
         ctx.fill();
         ctx.strokeStyle = color;
         ctx.lineWidth = 2.5;
         ctx.stroke();
         ctx.restore();
         const frontX = lane.dir === 1 ? v.x + len - 5 : v.x + 5;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = p.headlight;
         ctx.beginPath();
         ctx.arc(frontX, y + 7, 2.5, 0, Math.PI * 2);
         ctx.arc(frontX, y + h - 7, 2.5, 0, Math.PI * 2);
@@ -220,7 +266,7 @@ export function drawFrog(
   ctx.arc(-5, -ry + 2, 3, 0, Math.PI * 2);
   ctx.arc(5, -ry + 2, 3, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = p.bg;
+  ctx.fillStyle = p.frogPupil;
   ctx.beginPath();
   ctx.arc(-5, -ry + 1.5, 1.3, 0, Math.PI * 2);
   ctx.arc(5, -ry + 1.5, 1.3, 0, Math.PI * 2);
@@ -236,7 +282,7 @@ export function drawTimerBar(
 ): void {
   const frac = Math.max(0, Math.min(1, timeLeft / CROSS_TIME_S));
   const y = HEIGHT - 6;
-  ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+  ctx.fillStyle = p.timerTrack;
   ctx.fillRect(0, y, WIDTH, 6);
   ctx.fillStyle = timeLeft < 5 ? p.timerLow : p.timer;
   ctx.fillRect(0, y, WIDTH * frac, 6);
