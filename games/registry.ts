@@ -1,5 +1,6 @@
 import { createArkanoid } from "./arkanoid/engine";
 import { createAsteroids } from "./asteroids/engine";
+import { createHoraPunta } from "./frogger/engine";
 import { createSnake } from "./snake/engine";
 import { createTetris } from "./tetris/engine";
 import type { EngineDef, TouchControls } from "./types";
@@ -59,6 +60,15 @@ export const ENGINES: Record<string, EngineDef> = {
       dpad: DPAD,
       buttons: [{ code: "Space", label: "INICIO" }],
     },
+  },
+  frogger: {
+    create: createHoraPunta,
+    width: 800,
+    height: 600,
+    themes: [
+      { id: "neon", label: "NEÓN" },
+      { id: "classic", label: "CLÁSICO" },
+    ],
   },
   tetris: {
     create: createTetris,
