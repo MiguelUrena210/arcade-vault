@@ -12,10 +12,10 @@ Resumen de los juegos jugables de Arcade Vault. Datos de `public.games` y `publi
 | 4            | 4    | `gloton`      | GLOTÓN      | ARCADE  | yellow  | —     | —              | —      | 0        |
 | 5            | 5    | `invasores`   | INVASORES   | SHOOTER | green   | —     | —              | —      | 0        |
 | 6            | 6    | `asteroids`   | ASTEROIDS   | SHOOTER | yellow  | ✅    | ✅             | 440    | 1        |
-| 7            | 7    | `ranaria`     | RANARIA     | ARCADE  | green   | —     | —              | —      | 0        |
+| 7            | 7    | `frogger`     | FROGGER     | ARCADE  | green   | ✅    | ✅             | —      | 0        |
 | 8            | 8    | `duelo-pixel` | DUELO PIXEL | VERSUS  | cyan    | —     | —              | —      | 0        |
 
-Juegos reales: 4 de 8. Los que no tienen motor en `games/registry.ts` se simulan en `GamePlayer`.
+Juegos reales: 5 de 8. Los que no tienen motor en `games/registry.ts` se simulan en `GamePlayer`.
 
 ## Comunes a los 4 juegos
 
@@ -46,6 +46,13 @@ Juegos reales: 4 de 8. Los que no tienen motor en `games/registry.ts` se simulan
 - Controles: `←`/`→` o `A`/`D` mover, `Espacio` lanzar, `M` silenciar; menú inicial con `↑`/`↓` + `Enter` para elegir nivel 1–5.
 - Reglas: 10 pts por bloque; grises de 2–3 golpes valen `10 × hp`; 5 mapas en ciclo infinito; bola a 380 px/s, +8 % por nivel hasta el 10; 3 vidas.
 - Único juego con sonido (`public/games/arkanoid/`).
+
+## Frogger
+
+- Spec: `specs/09-hora-punta.md`. Motor propio (sin juego de referencia ni assets).
+- Temas: NEÓN, CLÁSICO.
+- Controles: flechas o `W`/`A`/`S`/`D` saltan 1 celda; `Espacio` o una flecha para empezar (`↓`/`S` inician sin mover).
+- Reglas: grilla 20×15 (celdas de 40 px); 12 carriles de tráfico y mediana segura (fila 7); 5 madrigueras; 10 pts por fila nueva, 50 + 10/s por madriguera, 1000 por nivel; 30 s por cruce; 3 vidas, +1 cada 10 000 (máx. 5); velocidad ×1 + 0,1 × (nivel − 1), tope ×1,9 en el nivel 10.
 
 ## Snake
 

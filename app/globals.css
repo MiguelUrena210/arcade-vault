@@ -1014,21 +1014,126 @@
     text-shadow: 0 0 8px var(--yellow);
   }
 
-  .cover-rana {
-    background: linear-gradient(180deg, #001f2a, #0a0a18);
+  /* Autopista nocturna cenital: 3 carriles arriba y 3 abajo de una mediana
+     con bordes amarillos; tráfico neón con estelas y la rana a salvo en medio. */
+  .cover-frogger {
+    container-type: size;
+    background:
+      radial-gradient(
+        ellipse at 50% 52%,
+        rgba(0, 255, 136, 0.12),
+        transparent 55%
+      ),
+      linear-gradient(180deg, #0c0c1b, #07070f);
   }
-  .cover-rana::after {
+  .cover-frogger::before {
     content: "";
     position: absolute;
     inset: 0;
     background:
-      repeating-linear-gradient(
-        0deg,
-        rgba(0, 245, 255, 0.18) 0 20px,
-        transparent 20px 40px
+      /* faros del tráfico */
+      radial-gradient(
+        circle 1.1cqh at calc(12cqw + 1cqh) 7.5cqh,
+        rgba(255, 255, 255, 0.9) 0 0.9cqh,
+        transparent 1.1cqh
       ),
-      radial-gradient(circle at 50% 55%, var(--green) 0 14px, transparent 15px);
-    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+      radial-gradient(
+        circle 1.1cqh at calc(55cqw + 29cqh) 22cqh,
+        rgba(255, 255, 255, 0.9) 0 0.9cqh,
+        transparent 1.1cqh
+      ),
+      radial-gradient(
+        circle 1.1cqh at calc(64cqw + 15cqh) 67cqh,
+        rgba(255, 255, 255, 0.9) 0 0.9cqh,
+        transparent 1.1cqh
+      ),
+      /* vehículos: carrocería + estela en su sentido */
+      linear-gradient(180deg, #ff4d94, #ff006e) left 12cqw top 3cqh / 16cqh
+        9cqh no-repeat,
+      linear-gradient(
+          90deg,
+          rgba(255, 0, 110, 0.35),
+          rgba(255, 0, 110, 0)
+        )
+        left calc(12cqw + 16cqh) top 3cqh / 22cqh 9cqh no-repeat,
+      linear-gradient(180deg, #ffe76a, #ffd60a) left 55cqw top 17.5cqh / 30cqh
+        9cqh no-repeat,
+      linear-gradient(
+          270deg,
+          rgba(255, 214, 10, 0.3),
+          rgba(255, 214, 10, 0)
+        )
+        left calc(55cqw - 24cqh) top 17.5cqh / 24cqh 9cqh no-repeat,
+      linear-gradient(180deg, #7ffaff, #00f5ff) left 30cqw top 33cqh / 8cqh
+        7.5cqh no-repeat,
+      linear-gradient(180deg, #7ffaff, #00f5ff) left 64cqw top 62.5cqh / 16cqh
+        9cqh no-repeat,
+      linear-gradient(
+          270deg,
+          rgba(0, 245, 255, 0.3),
+          rgba(0, 245, 255, 0)
+        )
+        left calc(64cqw - 20cqh) top 62.5cqh / 20cqh 9cqh no-repeat,
+      linear-gradient(180deg, #ff4d94, #ff006e) left 8cqw top 76cqh / 28cqh
+        9cqh no-repeat,
+      linear-gradient(180deg, #ffe76a, #ffd60a) left 42cqw top 89cqh / 16cqh
+        9cqh no-repeat,
+      /* mediana: bordes amarillos y banda de asfalto claro */
+      linear-gradient(var(--yellow), var(--yellow)) left 0 top 44cqh / 100cqw
+        0.7cqh no-repeat,
+      linear-gradient(var(--yellow), var(--yellow)) left 0 top 59.3cqh /
+        100cqw 0.7cqh no-repeat,
+      linear-gradient(180deg, #1a1a2c, #121220) left 0 top 44cqh / 100cqw
+        16cqh no-repeat,
+      /* líneas discontinuas entre carriles */
+      repeating-linear-gradient(
+          90deg,
+          rgba(0, 245, 255, 0.45) 0 6cqh,
+          transparent 6cqh 12cqh
+        )
+        left 0 top 14.3cqh / 100cqw 0.6cqh no-repeat,
+      repeating-linear-gradient(
+          90deg,
+          rgba(0, 245, 255, 0.45) 0 6cqh,
+          transparent 6cqh 12cqh
+        )
+        left 0 top 29cqh / 100cqw 0.6cqh no-repeat,
+      repeating-linear-gradient(
+          90deg,
+          rgba(0, 245, 255, 0.45) 0 6cqh,
+          transparent 6cqh 12cqh
+        )
+        left 0 top 73cqh / 100cqw 0.6cqh no-repeat,
+      repeating-linear-gradient(
+          90deg,
+          rgba(0, 245, 255, 0.45) 0 6cqh,
+          transparent 6cqh 12cqh
+        )
+        left 0 top 86.6cqh / 100cqw 0.6cqh no-repeat;
+    filter: drop-shadow(0 0 1.2cqh rgba(0, 245, 255, 0.3));
+  }
+  /* Rana mirando hacia arriba, quieta en la mediana. */
+  .cover-frogger::after {
+    content: "";
+    position: absolute;
+    top: 46.8cqh;
+    left: calc(50cqw - 5cqh);
+    width: 10cqh;
+    height: 10.5cqh;
+    border-radius: 4.5cqh 4.5cqh 3.5cqh 3.5cqh;
+    background:
+      radial-gradient(circle at 30% 16%, #05050f 0 0.9cqh, transparent 1cqh),
+      radial-gradient(circle at 70% 16%, #05050f 0 0.9cqh, transparent 1cqh),
+      radial-gradient(circle at 30% 13%, #d4ffea 0 1.5cqh, transparent 1.6cqh),
+      radial-gradient(circle at 70% 13%, #d4ffea 0 1.5cqh, transparent 1.6cqh),
+      radial-gradient(ellipse 2cqh 3.4cqh at 8% 62%, #00b872 0 98%, transparent),
+      radial-gradient(
+        ellipse 2cqh 3.4cqh at 92% 62%,
+        #00b872 0 98%,
+        transparent
+      ),
+      linear-gradient(180deg, #00ff88, #00b872);
+    filter: drop-shadow(0 0 1.6cqh rgba(0, 255, 136, 0.8));
   }
 
   .cover-duelo {
