@@ -1,6 +1,6 @@
 # SPEC 12 — Skins claras y oscuras por juego (Hora Punta)
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Depende de:** SPEC 09, SPEC 10
 > **Fecha:** 2026-10-28
 > **Objetivo:** Que Hora Punta (`frogger`) tenga ≥3 skins, con ≥1 de fondo claro y ≥1 de fondo oscuro, contraste WCAG ≥3:1 en cada elemento jugable (texto ≥4.5:1) y sin colores hardcodeados ni ramas `classic: boolean` que impidan un tercer tema. Asteroids, Arkanoid, Snake y Tetris ya cumplen (SPEC 10, implementada).

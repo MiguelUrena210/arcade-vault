@@ -1,6 +1,6 @@
 # SPEC 13 — Mando táctil de Hora Punta
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Depende de:** SPEC 11, SPEC 09
 > **Fecha:** 2026-10-28
 > **Objetivo:** Que Hora Punta (`frogger`) sea jugable de principio a fin en móvil declarando `controls` en su entrada de `ENGINES`, sin tocar el motor.
