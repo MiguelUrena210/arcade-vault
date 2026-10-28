@@ -1,7 +1,7 @@
 import { CONFIG, VEHICLE_LEN, type VehicleKind } from "./config";
 import type { Dir, Lane } from "./entities";
 
-export type HoraPuntaTheme = "neon" | "classic";
+export type HoraPuntaTheme = "neon" | "classic" | "diorama";
 
 export type Palette = {
   bg: string; // asfalto
@@ -70,6 +70,28 @@ export const PALETTES: Record<HoraPuntaTheme, Palette> = {
     timerTrack: "rgba(0, 0, 0, 0.35)",
     glow: 0,
     text: "#ffffff",
+  },
+  diorama: {
+    bg: "#dcd8cc",
+    sidewalk: "#efe9da",
+    hedge: "#7cb342",
+    home: "#f4efe2",
+    laneLine: "#4a4a4a",
+    medianLine: "#b8860b",
+    frog: "#1b5e20",
+    frogEye: "#fffdf5",
+    frogPupil: "#1a1a1a",
+    vehicles: { moto: "#1565c0", car: "#c62828", truck: "#5d4037" },
+    vehicleStyle: "flat",
+    vehicleBody: "rgba(10, 10, 20, 0.85)",
+    headlight: "#262626",
+    wheel: "#262626",
+    windshield: "rgba(255, 255, 255, 0.5)",
+    timer: "#1b5e20",
+    timerLow: "#b71c1c",
+    timerTrack: "rgba(0, 0, 0, 0.15)",
+    glow: 0,
+    text: "#262626",
   },
 };
 
