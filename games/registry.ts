@@ -68,6 +68,7 @@ export const ENGINES: Record<string, EngineDef> = {
     themes: [
       { id: "neon", label: "NEÓN" },
       { id: "classic", label: "CLÁSICO" },
+      { id: "diorama", label: "DIORAMA" },
     ],
   },
   tetris: {
