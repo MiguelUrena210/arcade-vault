@@ -70,6 +70,10 @@ export const ENGINES: Record<string, EngineDef> = {
       { id: "classic", label: "CLÁSICO" },
       { id: "diorama", label: "DIORAMA" },
     ],
+    controls: {
+      dpad: DPAD,
+      buttons: [{ code: "Space", label: "INICIO" }],
+    },
   },
   tetris: {
     create: createTetris,
