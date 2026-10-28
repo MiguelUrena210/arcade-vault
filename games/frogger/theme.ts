@@ -9,11 +9,19 @@ export type Palette = {
   hedge: string; // seto de la meta
   home: string; // madriguera libre
   laneLine: string; // líneas discontinuas
+  medianLine: string | null; // línea central doble en la mediana; null = sin línea
   frog: string;
   frogEye: string;
+  frogPupil: string;
   vehicles: Record<VehicleKind, string>;
+  vehicleStyle: "outline" | "flat";
+  vehicleBody: string; // relleno interior en estilo outline
+  headlight: string; // faros en estilo outline
+  wheel: string; // ruedas en estilo flat
+  windshield: string; // parabrisas en estilo flat
   timer: string;
   timerLow: string; // < 5 s
+  timerTrack: string; // pista de la barra
   glow: number; // shadowBlur; 0 en CLÁSICO
   text: string;
 };
@@ -25,25 +33,41 @@ export const PALETTES: Record<HoraPuntaTheme, Palette> = {
     hedge: "#0e3a1f",
     home: "#050d08",
     laneLine: "#00f5ff",
+    medianLine: null,
     frog: "#00ff88",
     frogEye: "#d4ffea",
+    frogPupil: "#0a0a14",
     vehicles: { moto: "#00f5ff", car: "#ff006e", truck: "#ffd60a" },
+    vehicleStyle: "outline",
+    vehicleBody: "rgba(10, 10, 20, 0.85)",
+    headlight: "#ffffff",
+    wheel: "#1c1c22",
+    windshield: "rgba(255, 255, 255, 0.35)",
     timer: "#00ff88",
     timerLow: "#ff3355",
+    timerTrack: "rgba(0, 0, 0, 0.35)",
     glow: 12,
     text: "#eaffff",
   },
   classic: {
     bg: "#4a4a52",
-    sidewalk: "#8a6fd6",
+    sidewalk: "#3d2f73",
     hedge: "#1e9e3c",
     home: "#0d0d12",
     laneLine: "#e8e8e8",
+    medianLine: "#f2c21e",
     frog: "#35c23a",
     frogEye: "#ffffff",
-    vehicles: { moto: "#ffd23f", car: "#ff5d5d", truck: "#d9d9e6" },
+    frogPupil: "#4a4a52",
+    vehicles: { moto: "#ffd23f", car: "#ff6b6b", truck: "#d9d9e6" },
+    vehicleStyle: "flat",
+    vehicleBody: "rgba(10, 10, 20, 0.85)",
+    headlight: "#ffffff",
+    wheel: "#1c1c22",
+    windshield: "rgba(255, 255, 255, 0.35)",
     timer: "#35c23a",
     timerLow: "#e03030",
+    timerTrack: "rgba(0, 0, 0, 0.35)",
     glow: 0,
     text: "#ffffff",
   },
