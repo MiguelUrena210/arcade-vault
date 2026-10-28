@@ -82,7 +82,6 @@ const DASH_YS = [2, 3, 4, 5, 6, 9, 10, 11, 12, 13].map((row) => row * CELL);
 export function drawBoard(
   ctx: CanvasRenderingContext2D,
   p: Palette,
-  classic: boolean,
   homes: boolean[],
 ): void {
   ctx.fillStyle = p.bg;
@@ -112,10 +111,12 @@ export function drawBoard(
   // Líneas discontinuas entre carriles.
   ctx.save();
   ctx.strokeStyle = p.laneLine;
-  ctx.lineWidth = classic ? 4 : 3;
+  ctx.lineWidth = p.vehicleStyle === "flat" ? 4 : 3;
   ctx.setLineDash([24, 16]);
-  if (!classic) ctx.shadowBlur = p.glow;
-  if (!classic) ctx.shadowColor = p.laneLine;
+  if (p.glow > 0) {
+    ctx.shadowBlur = p.glow;
+    ctx.shadowColor = p.laneLine;
+  }
   ctx.beginPath();
   for (const y of DASH_YS) {
     ctx.moveTo(0, y);
@@ -124,9 +125,9 @@ export function drawBoard(
   ctx.stroke();
   ctx.restore();
 
-  // CLÁSICO: línea central amarilla doble en la mediana.
-  if (classic) {
-    ctx.fillStyle = "#f2c21e";
+  // Línea central doble en la mediana, si la paleta la define.
+  if (p.medianLine !== null) {
+    ctx.fillStyle = p.medianLine;
     const mid = MEDIAN_ROW * CELL + CELL / 2;
     ctx.fillRect(0, mid - 5, WIDTH, 3);
     ctx.fillRect(0, mid + 2, WIDTH, 3);
@@ -136,7 +137,6 @@ export function drawBoard(
 export function drawTraffic(
   ctx: CanvasRenderingContext2D,
   p: Palette,
-  classic: boolean,
   lanes: Lane[],
 ): void {
   for (const lane of lanes) {
@@ -146,14 +146,14 @@ export function drawTraffic(
     const h = CELL - 12;
     for (const v of lane.vehicles) {
       if (v.x + len < 0 || v.x > WIDTH) continue;
-      if (classic) {
+      if (p.vehicleStyle === "flat") {
         // Vehículo plano con ruedas.
-        ctx.fillStyle = "#1c1c22";
+        ctx.fillStyle = p.wheel;
         ctx.fillRect(v.x + 6, y - 3, 12, h + 6);
         ctx.fillRect(v.x + len - 18, y - 3, 12, h + 6);
         ctx.fillStyle = color;
         ctx.fillRect(v.x, y, len, h);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+        ctx.fillStyle = p.windshield;
         ctx.fillRect(v.x + 4, y + 4, len - 8, 6);
       } else {
         // Rectángulo redondeado con contorno luminoso y faros.
@@ -162,14 +162,14 @@ export function drawTraffic(
         ctx.shadowColor = color;
         ctx.beginPath();
         ctx.roundRect(v.x, y, len, h, 8);
-        ctx.fillStyle = "rgba(10, 10, 20, 0.85)";
+        ctx.fillStyle = p.vehicleBody;
         ctx.fill();
         ctx.strokeStyle = color;
         ctx.lineWidth = 2.5;
         ctx.stroke();
         ctx.restore();
         const frontX = lane.dir === 1 ? v.x + len - 5 : v.x + 5;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = p.headlight;
         ctx.beginPath();
         ctx.arc(frontX, y + 7, 2.5, 0, Math.PI * 2);
         ctx.arc(frontX, y + h - 7, 2.5, 0, Math.PI * 2);
@@ -244,7 +244,7 @@ export function drawFrog(
   ctx.arc(-5, -ry + 2, 3, 0, Math.PI * 2);
   ctx.arc(5, -ry + 2, 3, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = p.bg;
+  ctx.fillStyle = p.frogPupil;
   ctx.beginPath();
   ctx.arc(-5, -ry + 1.5, 1.3, 0, Math.PI * 2);
   ctx.arc(5, -ry + 1.5, 1.3, 0, Math.PI * 2);
@@ -260,7 +260,7 @@ export function drawTimerBar(
 ): void {
   const frac = Math.max(0, Math.min(1, timeLeft / CROSS_TIME_S));
   const y = HEIGHT - 6;
-  ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+  ctx.fillStyle = p.timerTrack;
   ctx.fillRect(0, y, WIDTH, 6);
   ctx.fillStyle = timeLeft < 5 ? p.timerLow : p.timer;
   ctx.fillRect(0, y, WIDTH * frac, 6);
