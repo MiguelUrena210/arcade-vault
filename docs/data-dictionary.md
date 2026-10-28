@@ -4,7 +4,7 @@ Esquema `public` del proyecto Supabase `bffywagyecastmrxbnem`. Se actualiza en c
 
 Convenciones: ids `integer generated always as identity`; textos como `varchar(n)` (nunca `text`); catálogos cerrados como `enum`.
 
-Última migración documentada: `20261023000200_snake.sql`
+Última migración documentada: `20261026000100_frogger_short.sql`
 
 Las migraciones `20261023000000_tetris`, `20261023000100_arkanoid` y `20261023000200_snake` solo actualizan filas de `games` (slug, textos, portada, `saves_scores`); no cambian el esquema.
 

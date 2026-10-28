@@ -12,7 +12,7 @@ Resumen de los juegos jugables de Arcade Vault. Datos de `public.games` y `publi
 | 4            | 4    | `gloton`      | GLOTÓN      | ARCADE  | yellow  | —     | —              | —      | 0        |
 | 5            | 5    | `invasores`   | INVASORES   | SHOOTER | green   | —     | —              | —      | 0        |
 | 6            | 6    | `asteroids`   | ASTEROIDS   | SHOOTER | yellow  | ✅    | ✅             | 440    | 1        |
-| 7            | 7    | `ranaria`     | RANARIA     | ARCADE  | green   | —     | —              | —      | 0        |
+| 7            | 7    | `frogger`     | FROGGER     | ARCADE  | green   | —     | ✅             | —      | 0        |
 | 8            | 8    | `duelo-pixel` | DUELO PIXEL | VERSUS  | cyan    | —     | —              | —      | 0        |
 
 Juegos reales: 4 de 8. Los que no tienen motor en `games/registry.ts` se simulan en `GamePlayer`.

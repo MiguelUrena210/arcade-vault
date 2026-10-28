@@ -95,7 +95,7 @@ export const TICKER: TickerRow[] = [
   },
   {
     player: "CYBER_LU",
-    game: "Ranaria",
+    game: "Frogger",
     score: 18900,
     time: "hace 31 min",
     color: "yellow",
