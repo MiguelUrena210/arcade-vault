@@ -1,19 +1,60 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useActionState, useState } from "react";
+
+import {
+  requestPasswordReset,
+  signIn,
+  signInWithProvider,
+  signUp,
+  type AuthState,
+} from "@/app/login/actions";
+
+const signInWithGoogle = signInWithProvider.bind(null, "google");
+const signInWithGitHub = signInWithProvider.bind(null, "github");
+
+const initialState: AuthState = {};
+
+const URL_ERRORS: Record<string, string> = {
+  confirm: "El enlace no es válido o ha caducado. Solicita uno nuevo.",
+  oauth: "No se pudo completar el acceso con el proveedor.",
+};
+
+function FormNotice({ state }: { state: AuthState }) {
+  if (!state.error && !state.message) return null;
+  return (
+    <div
+      className="mono"
+      role={state.error ? "alert" : "status"}
+      style={{
+        fontSize: 12,
+        letterSpacing: "0.08em",
+        color: state.error ? "var(--magenta)" : "var(--green)",
+        margin: "4px 0 10px",
+      }}
+    >
+      {state.error ?? state.message}
+    </div>
+  );
+}
 
 export function AuthForm() {
   const router = useRouter();
-  const [tab, setTab] = useState<"in" | "up">("in");
-  const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
-  const [email, setEmail] = useState("");
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    router.push("/games");
-  };
+  const urlError = URL_ERRORS[useSearchParams().get("error") ?? ""];
+  const [tab, setTab] = useState<"in" | "up" | "forgot">("in");
+  const [inState, signInAction, inPending] = useActionState(
+    signIn,
+    initialState,
+  );
+  const [upState, signUpAction, upPending] = useActionState(
+    signUp,
+    initialState,
+  );
+  const [resetState, resetAction, resetPending] = useActionState(
+    requestPasswordReset,
+    initialState,
+  );
 
   return (
     <div className="av-auth-wrap fade-in">
@@ -36,7 +77,7 @@ export function AuthForm() {
 
         <div className="auth-tabs">
           <button
-            className={tab === "in" ? "on" : ""}
+            className={tab !== "up" ? "on" : ""}
             onClick={() => setTab("in")}
           >
             INICIAR SESIÓN
@@ -49,44 +90,158 @@ export function AuthForm() {
           </button>
         </div>
 
-        <form onSubmit={submit}>
-          <div className="field">
-            <label>Usuario</label>
-            <input
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              placeholder="px_kai"
-            />
-          </div>
-          {tab === "up" && (
-            <div className="field slide-in">
+        {urlError && <FormNotice state={{ error: urlError }} />}
+
+        {tab === "in" ? (
+          <form action={signInAction}>
+            <div className="field">
               <label>Correo electrónico</label>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                required
                 placeholder="jugador@vault.gg"
               />
             </div>
-          )}
-          <div className="field">
-            <label>Contraseña</label>
-            <input
-              type="password"
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-              placeholder="••••••••"
-            />
+            <div className="field">
+              <label>Contraseña</label>
+              <input
+                type="password"
+                name="password"
+                required
+                placeholder="••••••••"
+              />
+            </div>
+            <FormNotice state={inState} />
+            <button
+              className="btn lg"
+              type="submit"
+              disabled={inPending}
+              style={{ width: "100%", marginTop: 8 }}
+            >
+              {inPending ? "CONECTANDO…" : "ENTRAR AL VAULT"}
+            </button>
+            <button
+              type="button"
+              className="mono"
+              onClick={() => setTab("forgot")}
+              style={{
+                display: "block",
+                margin: "12px auto 0",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                color: "var(--ink-dim)",
+                textDecoration: "underline",
+              }}
+            >
+              ¿OLVIDASTE TU CONTRASEÑA?
+            </button>
+          </form>
+        ) : tab === "forgot" ? (
+          <form action={resetAction} className="slide-in">
+            <div
+              className="mono"
+              style={{
+                fontSize: 11,
+                color: "var(--ink-dim)",
+                letterSpacing: "0.1em",
+                marginBottom: 12,
+              }}
+            >
+              TE ENVIAREMOS UN ENLACE PARA RESTABLECERLA
+            </div>
+            <div className="field">
+              <label>Correo electrónico</label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="jugador@vault.gg"
+              />
+            </div>
+            <FormNotice state={resetState} />
+            <button
+              className="btn lg"
+              type="submit"
+              disabled={resetPending}
+              style={{ width: "100%", marginTop: 8 }}
+            >
+              {resetPending ? "ENVIANDO…" : "ENVIAR ENLACE"}
+            </button>
+            <button
+              type="button"
+              className="mono"
+              onClick={() => setTab("in")}
+              style={{
+                display: "block",
+                margin: "12px auto 0",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                color: "var(--ink-dim)",
+                textDecoration: "underline",
+              }}
+            >
+              VOLVER A INICIAR SESIÓN
+            </button>
+          </form>
+        ) : upState.message ? (
+          <div className="slide-in" style={{ textAlign: "center" }}>
+            <FormNotice state={upState} />
+            <div
+              className="mono"
+              style={{
+                fontSize: 12,
+                color: "var(--ink-dim)",
+                letterSpacing: "0.08em",
+                marginBottom: 12,
+              }}
+            >
+              Sigue el enlace del correo para activar la cuenta y entrar al
+              Vault.
+            </div>
           </div>
-
-          <button
-            className="btn lg"
-            type="submit"
-            style={{ width: "100%", marginTop: 8 }}
-          >
-            {tab === "in" ? "ENTRAR AL VAULT" : "CREAR Y JUGAR"}
-          </button>
-        </form>
+        ) : (
+          <form action={signUpAction}>
+            <div className="field slide-in">
+              <label>Usuario</label>
+              <input name="username" required placeholder="px_kai" />
+            </div>
+            <div className="field">
+              <label>Correo electrónico</label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="jugador@vault.gg"
+              />
+            </div>
+            <div className="field">
+              <label>Contraseña</label>
+              <input
+                type="password"
+                name="password"
+                required
+                minLength={6}
+                placeholder="••••••••"
+              />
+            </div>
+            <FormNotice state={upState} />
+            <button
+              className="btn lg"
+              type="submit"
+              disabled={upPending}
+              style={{ width: "100%", marginTop: 8 }}
+            >
+              {upPending ? "CREANDO…" : "CREAR Y JUGAR"}
+            </button>
+          </form>
+        )}
 
         <button
           className="btn ghost"
@@ -98,12 +253,16 @@ export function AuthForm() {
 
         <div className="auth-divider">O CONTINÚA CON</div>
         <div className="social">
-          <button className="btn ghost" type="button">
-            ◆ GOOGLE
-          </button>
-          <button className="btn ghost" type="button">
-            ▣ GITHUB
-          </button>
+          <form action={signInWithGoogle} style={{ display: "contents" }}>
+            <button className="btn ghost" type="submit">
+              ◆ GOOGLE
+            </button>
+          </form>
+          <form action={signInWithGitHub} style={{ display: "contents" }}>
+            <button className="btn ghost" type="submit">
+              ▣ GITHUB
+            </button>
+          </form>
         </div>
 
         <div

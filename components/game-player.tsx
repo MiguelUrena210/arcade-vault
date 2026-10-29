@@ -14,6 +14,8 @@ import { saveScore } from "@/app/games/[id]/play/actions";
 import { ENGINES } from "@/games/registry";
 import type { EngineStats } from "@/games/types";
 import type { Game } from "@/lib/games";
+import { createClient } from "@/lib/supabase/client";
+import { displayNameFrom, GUEST_INITIALS, initialsFrom } from "@/lib/user-name";
 
 type Run = { score: number; level: number };
 
@@ -44,7 +46,9 @@ export function GamePlayer({ game }: { game: Game }) {
   const lives = engine ? real.lives : simLives;
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [name, setName] = useState("INVITADO");
+  const [name, setName] = useState(GUEST_INITIALS);
+  // Con sesión, el nombre es el display name saneado y no se puede editar.
+  const [nameLocked, setNameLocked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -60,6 +64,22 @@ export function GamePlayer({ game }: { game: Game }) {
     () => !!document.fullscreenElement,
     () => false,
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    createClient()
+      .auth.getSession()
+      .then(({ data }) => {
+        const displayName = displayNameFrom(data.session?.user);
+        if (!cancelled && displayName) {
+          setName(initialsFrom(displayName));
+          setNameLocked(true);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (engine || over || paused) return;
@@ -258,10 +278,14 @@ export function GamePlayer({ game }: { game: Game }) {
                   onChange={(e) =>
                     setName(e.target.value.toUpperCase().slice(0, 10))
                   }
+                  readOnly={nameLocked}
                   placeholder="TUS INICIALES"
                   autoCapitalize="characters"
                   autoComplete="off"
                   enterKeyHint="done"
+                  style={
+                    nameLocked ? { opacity: 0.6, cursor: "default" } : undefined
+                  }
                 />
                 <button className="btn yellow" onClick={save} disabled={saving}>
                   {saving ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}

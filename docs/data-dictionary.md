@@ -4,7 +4,7 @@ Esquema `public` del proyecto Supabase `bffywagyecastmrxbnem`. Se actualiza en c
 
 Convenciones: ids `integer generated always as identity`; textos como `varchar(n)` (nunca `text`); catálogos cerrados como `enum`.
 
-Última migración documentada: `20261026000100_frogger_short.sql`
+Última migración documentada: `20261029000000_scores_user.sql`
 
 Las migraciones `20261023000000_tetris`, `20261023000100_arkanoid` y `20261023000200_snake` solo actualizan filas de `games` (slug, textos, portada, `saves_scores`); no cambian el esquema.
 
@@ -54,20 +54,24 @@ Políticas RLS: `games_select` (SELECT para `anon`, `authenticated`). Sin insert
 
 Puntuaciones guardadas. RLS activo.
 
-| Columna      | Tipo          | Nulo | Default           | Restricciones                          | Descripción             |
-| ------------ | ------------- | ---- | ----------------- | -------------------------------------- | ----------------------- |
-| `id`         | `integer`     | no   | identity (always) | PK                                     | Identificador.          |
-| `game_id`    | `integer`     | no   | —                 | FK → `games.id` ON DELETE CASCADE      | Juego al que pertenece. |
-| `initials`   | `varchar(10)` | no   | —                 | CHECK `initials ~ '^[A-Z0-9_]{3,10}$'` | Iniciales del jugador.  |
-| `score`      | `integer`     | no   | —                 | CHECK `score between 0 and 1000000`    | Puntuación.             |
-| `created_at` | `timestamptz` | no   | `now()`           |                                        | Fecha de la partida.    |
+| Columna        | Tipo          | Nulo | Default           | Restricciones                           | Descripción                                    |
+| -------------- | ------------- | ---- | ----------------- | --------------------------------------- | ---------------------------------------------- |
+| `id`           | `integer`     | no   | identity (always) | PK                                      | Identificador.                                 |
+| `game_id`      | `integer`     | no   | —                 | FK → `games.id` ON DELETE CASCADE       | Juego al que pertenece.                        |
+| `initials`     | `varchar(10)` | no   | —                 | CHECK `initials ~ '^[A-Z0-9_]{3,10}$'`  | Iniciales del jugador.                         |
+| `score`        | `integer`     | no   | —                 | CHECK `score between 0 and 1000000`     | Puntuación.                                    |
+| `user_id`      | `uuid`        | sí   | —                 | FK → `auth.users.id` ON DELETE SET NULL | Usuario registrado (`null` = invitado).        |
+| `display_name` | `varchar(40)` | sí   | —                 |                                         | Snapshot del display name al guardar el score. |
+| `created_at`   | `timestamptz` | no   | `now()`           |                                         | Fecha de la partida.                           |
 
-Índices: `scores_game_rank_idx` (`game_id`, `score desc`, `created_at asc`).
+Restricción de tabla: `scores_user_has_name` — CHECK `user_id is null or display_name is not null` (si hay usuario, hay nombre; el nombre sobrevive al borrado de la cuenta porque el `on delete set null` solo anula `user_id`).
+
+Índices: `scores_game_rank_idx` (`game_id`, `score desc`, `created_at asc`), `scores_user_id_idx` (`user_id`).
 
 Políticas RLS:
 
 - `scores_select`: SELECT para `anon`, `authenticated`.
-- `scores_insert`: INSERT para `anon`, `authenticated` solo si el `games` referenciado tiene `saves_scores = true`.
+- `scores_insert`: INSERT para `anon`, `authenticated` solo si el `games` referenciado tiene `saves_scores = true` y `user_id` es `null` o igual a `auth.uid()` (un `anon` nunca puede fijar `user_id`; un `authenticated`, solo el suyo).
 - Sin update/delete.
 
 ## Funciones y event triggers
