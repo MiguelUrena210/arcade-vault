@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useActionState, useState } from "react";
 
 import {
+  requestPasswordReset,
   signIn,
   signInWithProvider,
   signUp,
@@ -41,13 +42,17 @@ function FormNotice({ state }: { state: AuthState }) {
 export function AuthForm() {
   const router = useRouter();
   const urlError = URL_ERRORS[useSearchParams().get("error") ?? ""];
-  const [tab, setTab] = useState<"in" | "up">("in");
+  const [tab, setTab] = useState<"in" | "up" | "forgot">("in");
   const [inState, signInAction, inPending] = useActionState(
     signIn,
     initialState,
   );
   const [upState, signUpAction, upPending] = useActionState(
     signUp,
+    initialState,
+  );
+  const [resetState, resetAction, resetPending] = useActionState(
+    requestPasswordReset,
     initialState,
   );
 
@@ -72,7 +77,7 @@ export function AuthForm() {
 
         <div className="auth-tabs">
           <button
-            className={tab === "in" ? "on" : ""}
+            className={tab !== "up" ? "on" : ""}
             onClick={() => setTab("in")}
           >
             INICIAR SESIÓN
@@ -115,6 +120,74 @@ export function AuthForm() {
               style={{ width: "100%", marginTop: 8 }}
             >
               {inPending ? "CONECTANDO…" : "ENTRAR AL VAULT"}
+            </button>
+            <button
+              type="button"
+              className="mono"
+              onClick={() => setTab("forgot")}
+              style={{
+                display: "block",
+                margin: "12px auto 0",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                color: "var(--ink-dim)",
+                textDecoration: "underline",
+              }}
+            >
+              ¿OLVIDASTE TU CONTRASEÑA?
+            </button>
+          </form>
+        ) : tab === "forgot" ? (
+          <form action={resetAction} className="slide-in">
+            <div
+              className="mono"
+              style={{
+                fontSize: 11,
+                color: "var(--ink-dim)",
+                letterSpacing: "0.1em",
+                marginBottom: 12,
+              }}
+            >
+              TE ENVIAREMOS UN ENLACE PARA RESTABLECERLA
+            </div>
+            <div className="field">
+              <label>Correo electrónico</label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="jugador@vault.gg"
+              />
+            </div>
+            <FormNotice state={resetState} />
+            <button
+              className="btn lg"
+              type="submit"
+              disabled={resetPending}
+              style={{ width: "100%", marginTop: 8 }}
+            >
+              {resetPending ? "ENVIANDO…" : "ENVIAR ENLACE"}
+            </button>
+            <button
+              type="button"
+              className="mono"
+              onClick={() => setTab("in")}
+              style={{
+                display: "block",
+                margin: "12px auto 0",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                color: "var(--ink-dim)",
+                textDecoration: "underline",
+              }}
+            >
+              VOLVER A INICIAR SESIÓN
             </button>
           </form>
         ) : upState.message ? (

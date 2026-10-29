@@ -17,7 +17,9 @@ const AUTH_ERRORS: Record<string, string> = {
   email_exists: "Ya existe una cuenta con ese correo",
   weak_password: "Contraseña demasiado débil (mínimo 6 caracteres)",
   over_request_rate_limit: "Demasiados intentos; espera un momento",
+  over_email_send_rate_limit: "Demasiados correos enviados; espera un momento",
   signup_disabled: "El registro está desactivado",
+  same_password: "La nueva contraseña debe ser distinta de la actual",
 };
 
 function authError(code: string | undefined, fallback: string) {
@@ -86,6 +88,47 @@ export async function signInWithProvider(provider: "google" | "github") {
   }
 
   redirect(data.url);
+}
+
+export async function requestPasswordReset(
+  _prev: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) {
+    return { error: "Introduce tu email" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  if (error) {
+    return { error: authError(error.code, "No se pudo enviar el correo") };
+  }
+
+  return { message: "Revisa tu correo para restablecer la contraseña" };
+}
+
+export async function updatePassword(
+  _prev: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const password = String(formData.get("password") ?? "");
+  if (password.length < 6) {
+    return { error: "Contraseña demasiado débil (mínimo 6 caracteres)" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    return {
+      error: authError(
+        error.code,
+        "No se pudo actualizar la contraseña; solicita un enlace nuevo",
+      ),
+    };
+  }
+
+  redirect("/games");
 }
 
 export async function signOut() {
