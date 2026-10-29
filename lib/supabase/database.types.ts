@@ -59,24 +59,30 @@ export type Database = {
       scores: {
         Row: {
           created_at: string;
+          display_name: string | null;
           game_id: number;
           id: number;
           initials: string;
           score: number;
+          user_id: string | null;
         };
         Insert: {
           created_at?: string;
+          display_name?: string | null;
           game_id: number;
           id?: never;
           initials: string;
           score: number;
+          user_id?: string | null;
         };
         Update: {
           created_at?: string;
+          display_name?: string | null;
           game_id?: number;
           id?: never;
           initials?: string;
           score?: number;
+          user_id?: string | null;
         };
         Relationships: [
           {
