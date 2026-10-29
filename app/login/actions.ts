@@ -15,7 +15,7 @@ const AUTH_ERRORS: Record<string, string> = {
   email_not_confirmed: "Confirma tu correo antes de entrar",
   user_already_exists: "Ya existe una cuenta con ese correo",
   email_exists: "Ya existe una cuenta con ese correo",
-  weak_password: "Contraseña demasiado débil (mínimo 6 caracteres)",
+  weak_password: "Contraseña demasiado débil (mínimo 8 caracteres)",
   over_request_rate_limit: "Demasiados intentos; espera un momento",
   over_email_send_rate_limit: "Demasiados correos enviados; espera un momento",
   signup_disabled: "El registro está desactivado",
@@ -117,8 +117,8 @@ export async function updatePassword(
   formData: FormData,
 ): Promise<AuthState> {
   const password = String(formData.get("password") ?? "");
-  if (password.length < 6) {
-    return { error: "Contraseña demasiado débil (mínimo 6 caracteres)" };
+  if (password.length < 8) {
+    return { error: "Contraseña demasiado débil (mínimo 8 caracteres)" };
   }
 
   const supabase = await createClient();

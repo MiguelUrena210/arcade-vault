@@ -38,7 +38,7 @@ export function ResetPasswordForm() {
               type="password"
               name="password"
               required
-              minLength={6}
+              minLength={8}
               autoFocus
               placeholder="••••••••"
             />

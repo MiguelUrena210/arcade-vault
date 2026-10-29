@@ -227,7 +227,7 @@ export function AuthForm() {
                 type="password"
                 name="password"
                 required
-                minLength={6}
+                minLength={8}
                 placeholder="••••••••"
               />
             </div>
