@@ -1,6 +1,6 @@
 # SPEC 15 — Endurecimiento de seguridad básico
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Depende de:** SPEC 03, SPEC 14
 > **Fecha:** 2026-10-29
 > **Objetivo:** Aplicar el checklist de `references/security/security-checklist.md`: headers de seguridad en Next.js, contraseña mínima de 8 caracteres, rate limit de registros por IP y limpieza de los warnings del panel de advisors de Supabase, verificando el RLS ya existente.

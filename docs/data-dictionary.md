@@ -4,7 +4,7 @@ Esquema `public` del proyecto Supabase `bffywagyecastmrxbnem`. Se actualiza en c
 
 Convenciones: ids `integer generated always as identity`; textos como `varchar(n)` (nunca `text`); catálogos cerrados como `enum`.
 
-Última migración documentada: `20261029000000_scores_user.sql`
+Última migración documentada: `20261029134336_revoke_rls_auto_enable.sql`
 
 Las migraciones `20261023000000_tetris`, `20261023000100_arkanoid` y `20261023000200_snake` solo actualizan filas de `games` (slug, textos, portada, `saves_scores`); no cambian el esquema.
 
@@ -79,6 +79,8 @@ Políticas RLS:
 ### `rls_auto_enable()`
 
 Función en `public`, ligada al event trigger `ensure_rls` (`ddl_command_end`). Habilita RLS automáticamente en tablas nuevas. Viene de la plataforma Supabase, no de las migraciones del repo. No aparece en `database.types.ts`.
+
+Es `SECURITY DEFINER`; la migración `20261029134336_revoke_rls_auto_enable.sql` revoca `EXECUTE` a `public`, `anon` y `authenticated`, de modo que no es invocable vía `/rest/v1/rpc/`. Sigue funcionando como event trigger (se ejecuta como su owner).
 
 ## Vistas
 
