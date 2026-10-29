@@ -2,11 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { signOut } from "@/app/login/actions";
+import { createClient } from "@/lib/supabase/client";
+import { displayNameFrom } from "@/lib/user-name";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const supabase = createClient();
+    // Se relee en cada cambio de ruta: login/logout ocurren en el servidor
+    // (Server Actions) y no disparan eventos en este cliente.
+    supabase.auth.getSession().then(({ data }) => {
+      setDisplayName(displayNameFrom(data.session?.user));
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setDisplayName(displayNameFrom(session?.user));
+    });
+    return () => subscription.unsubscribe();
+  }, [pathname]);
 
   const isActive = (name: "inicio" | "biblioteca" | "salon" | "auth") => {
     if (name === "inicio") return pathname === "/";
@@ -47,9 +67,38 @@ export function Nav() {
           <span className="coin"></span>
           <span>CRÉDITOS · 03</span>
         </div>
-        <Link href="/login" className="btn auth-btn">
-          Iniciar Sesión
-        </Link>
+        {displayName ? (
+          <>
+            <span
+              className="mono"
+              style={{
+                fontSize: 11,
+                color: "var(--green)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                maxWidth: 160,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {displayName}
+            </span>
+            <form action={signOut}>
+              <button
+                className="btn auth-btn"
+                type="submit"
+                onClick={() => setDisplayName(null)}
+              >
+                Salir
+              </button>
+            </form>
+          </>
+        ) : (
+          <Link href="/login" className="btn auth-btn">
+            Iniciar Sesión
+          </Link>
+        )}
         <button
           className="btn ghost hamburger"
           onClick={() => setOpen(true)}
@@ -91,13 +140,45 @@ export function Nav() {
         >
           Salón de la Fama
         </Link>
-        <Link
-          href="/login"
-          className={isActive("auth") ? "active" : ""}
-          onClick={close}
-        >
-          Iniciar Sesión
-        </Link>
+        {displayName ? (
+          <>
+            <div
+              className="mono"
+              style={{
+                fontSize: 11,
+                color: "var(--green)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {displayName}
+            </div>
+            <form action={signOut}>
+              <button
+                className="btn ghost"
+                type="submit"
+                style={{ width: "100%" }}
+                onClick={() => {
+                  setDisplayName(null);
+                  close();
+                }}
+              >
+                Salir
+              </button>
+            </form>
+          </>
+        ) : (
+          <Link
+            href="/login"
+            className={isActive("auth") ? "active" : ""}
+            onClick={close}
+          >
+            Iniciar Sesión
+          </Link>
+        )}
         <div style={{ flex: 1 }}></div>
         <div
           className="pixel"
