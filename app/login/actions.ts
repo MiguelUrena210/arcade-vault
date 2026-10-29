@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -67,6 +68,24 @@ export async function signUp(
   }
 
   return { message: "Revisa tu correo para confirmar la cuenta" };
+}
+
+export async function signInWithProvider(provider: "google" | "github") {
+  const headerStore = await headers();
+  const origin =
+    headerStore.get("origin") ??
+    `${headerStore.get("x-forwarded-proto") ?? "http"}://${headerStore.get("host")}`;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: `${origin}/auth/callback` },
+  });
+  if (error || !data.url) {
+    redirect("/login?error=oauth");
+  }
+
+  redirect(data.url);
 }
 
 export async function signOut() {
