@@ -81,7 +81,11 @@ export async function signInWithProvider(provider: "google" | "github") {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: `${origin}/auth/callback` },
+    options: {
+      redirectTo: `${origin}/auth/callback`,
+      // Google y GitHub muestran el selector de cuentas en cada intento.
+      queryParams: { prompt: "select_account" },
+    },
   });
   if (error || !data.url) {
     redirect("/login?error=oauth");

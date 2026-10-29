@@ -28,6 +28,15 @@ export function Nav() {
     return () => subscription.unsubscribe();
   }, [pathname]);
 
+  // La action ya está despachada cuando se limpia el estado: desmontar el
+  // form no la cancela. El clear local cubre salir estando ya en "/"
+  // (sin cambio de pathname el efecto no relee la sesión).
+  const handleSignOut = async () => {
+    setDisplayName(null);
+    close();
+    await signOut();
+  };
+
   const isActive = (name: "inicio" | "biblioteca" | "salon" | "auth") => {
     if (name === "inicio") return pathname === "/";
     if (name === "biblioteca") return pathname.startsWith("/games");
@@ -84,12 +93,8 @@ export function Nav() {
             >
               {displayName}
             </span>
-            <form action={signOut}>
-              <button
-                className="btn auth-btn"
-                type="submit"
-                onClick={() => setDisplayName(null)}
-              >
+            <form action={handleSignOut}>
+              <button className="btn auth-btn" type="submit">
                 Salir
               </button>
             </form>
@@ -156,15 +161,11 @@ export function Nav() {
             >
               {displayName}
             </div>
-            <form action={signOut}>
+            <form action={handleSignOut}>
               <button
                 className="btn ghost"
                 type="submit"
                 style={{ width: "100%" }}
-                onClick={() => {
-                  setDisplayName(null);
-                  close();
-                }}
               >
                 Salir
               </button>

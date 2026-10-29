@@ -1,6 +1,6 @@
 # SPEC 14 — Registro, login y autenticación con Supabase Auth
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 03, SPEC 05
 > **Fecha:** 2026-10-28
 > **Objetivo:** Dar lógica real a la pantalla de `/login` con Supabase Auth: registro con confirmación por correo, inicio de sesión con email+contraseña o Google/GitHub, recuperación de contraseña, sesión visible en el nav con cierre de sesión y refresco de tokens vía `proxy.ts`, manteniendo todo el sitio accesible sin cuenta. Las puntuaciones guardadas con sesión almacenan además el `user_id` y el display name actual del usuario.
