@@ -26,3 +26,19 @@ export function displayNameFrom(
   const emailLocal = user.email?.split("@")[0]?.trim();
   return emailLocal || null;
 }
+
+export const GUEST_INITIALS = "INVITADO";
+
+/**
+ * Sanea un display name a iniciales válidas para `scores.initials`:
+ * mayúsculas, espacios a `_`, solo [A-Z0-9_], recorte a 10.
+ * Si el resultado no cumple `^[A-Z0-9_]{3,10}$`, devuelve INVITADO.
+ */
+export function initialsFrom(displayName: string | null | undefined): string {
+  const sanitized = (displayName ?? "")
+    .toUpperCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^A-Z0-9_]/g, "")
+    .slice(0, 10);
+  return /^[A-Z0-9_]{3,10}$/.test(sanitized) ? sanitized : GUEST_INITIALS;
+}
