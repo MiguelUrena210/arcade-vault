@@ -1,11 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useActionState, useState } from "react";
 
 import { signIn, signUp, type AuthState } from "@/app/login/actions";
 
 const initialState: AuthState = {};
+
+const URL_ERRORS: Record<string, string> = {
+  confirm: "El enlace no es válido o ha caducado. Solicita uno nuevo.",
+  oauth: "No se pudo completar el acceso con el proveedor.",
+};
 
 function FormNotice({ state }: { state: AuthState }) {
   if (!state.error && !state.message) return null;
@@ -27,6 +32,7 @@ function FormNotice({ state }: { state: AuthState }) {
 
 export function AuthForm() {
   const router = useRouter();
+  const urlError = URL_ERRORS[useSearchParams().get("error") ?? ""];
   const [tab, setTab] = useState<"in" | "up">("in");
   const [inState, signInAction, inPending] = useActionState(
     signIn,
@@ -70,6 +76,8 @@ export function AuthForm() {
             CREAR CUENTA
           </button>
         </div>
+
+        {urlError && <FormNotice state={{ error: urlError }} />}
 
         {tab === "in" ? (
           <form action={signInAction}>
