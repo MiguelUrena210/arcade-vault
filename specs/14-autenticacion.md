@@ -51,6 +51,7 @@ El agente no puede hacerlos; deben estar listos antes de probar cada flujo:
 Sin tablas nuevas. La sesión vive en cookies gestionadas por `@supabase/ssr` y el usuario en `auth.users` (gestionada por Supabase).
 
 - Display name: `user_metadata.display_name`, enviado en `signUp({ options: { data: { display_name } } })`. **Solo para mostrar**: `user_metadata` es editable por el propio usuario y nunca se usa para autorización ni en RLS.
+- Resolución del nombre (helper único `lib/user-name.ts`, usado por nav, `GamePlayer` y `saveScore`): `display_name ?? full_name ?? name ?? user_name ?? parte local del email` (trim en cada paso). Los proveedores OAuth no rellenan `display_name`; el email como último recurso garantiza que con sesión siempre hay nombre (lo exige el check de `scores`).
 
 ### Migración `scores` (`supabase/migrations/<timestamp>_scores_user.sql`)
 
@@ -98,6 +99,7 @@ export type AuthState = {
 - `app/auth/callback/route.ts` — GET: `exchangeCodeForSession(code)`; redirige a `/games`; con error, a `/login?error=oauth`.
 - `app/reset-password/page.tsx` + `components/reset-password-form.tsx` — formulario de nueva contraseña (`updatePassword`), reutilizando las clases `auth-card`/`field`/`btn` existentes.
 - `supabase/migrations/<timestamp>_scores_user.sql` — columnas `user_id` y `display_name` en `scores` + política `scores_insert` nueva (ver Modelo de datos).
+- `lib/user-name.ts` — resolución del display name con fallback para OAuth (ver Modelo de datos).
 
 **Modificados:**
 
@@ -146,6 +148,7 @@ export type AuthState = {
 - **Sí:** display name en `user_metadata`. Sin tabla ni migración; nunca se usa para autorización (es editable por el usuario).
 - **Sí:** sesión del nav leída en **cliente** con `onAuthStateChange`. No toca el static shell del layout con `cacheComponents` y se actualiza sola tras login/logout. **No:** slot server con `<Suspense>` dentro de `RootLayout` — más invasivo y bloquea parte del shell.
 - **Sí:** recuperación de contraseña dentro de esta spec (decisión del usuario), reutilizando `/auth/confirm` con `type=recovery`.
+- **Sí:** fallback de nombre para OAuth (decisión del usuario durante la implementación): `display_name ?? full_name ?? name ?? user_name ?? email local`, en `lib/user-name.ts`, sin escrituras en `user_metadata`. **No:** normalizar `display_name` con `updateUser` en el callback.
 - **Sí:** `user_id` + `display_name` en `scores` (decisión del usuario). Nombre **fijo** con sesión (campo bloqueado), `display_name` como snapshot tal cual y `initials` derivadas del saneado **en servidor** — el cliente no decide la identidad. El leaderboard sigue leyendo `initials`; mostrar el nombre completo queda para una spec futura.
 - **No:** tabla `profiles` con username único y login por username. Spec futura.
 - **No:** magic link ni rutas protegidas. El arcade sigue siendo público; la sesión solo aporta identidad.
