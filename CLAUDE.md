@@ -56,7 +56,7 @@ Estado: home, biblioteca, detalle, reproductor y salón de la fama con datos de 
 
 ## Stack y configuración
 
-- Next.js 16.4.2 (App Router, `app/`), React 19.3, TypeScript strict, Tailwind v4 (`@import "tailwindcss"` en `globals.css`).
+- Next.js 16.4.6 (App Router, `app/`), React 19.3, TypeScript strict, Tailwind v4 (`@import "tailwindcss"` en `globals.css`).
 - Alias de imports: `@/*` → raíz del repo.
 - `next.config.ts` activa `cacheComponents`, `partialPrefetching` y `experimental.agentFeedback`; Tailwind se procesa con `@tailwindcss/turbopack` vía `turbopack.rules` para `*.css`.
 - `RootLayout` usa el tipo global `LayoutProps<"/">` (typed routes de Next, sin import).
